@@ -11,8 +11,8 @@ def get_exe_full_path(exe_file):
     if path and os.path.isfile(exe_file):
         return exe_file
 
-    for exe_file in os.environ["PATH"].split(os.pathsep):
-        full_exe_file_name = os.path.join(path.strip('"'), exe_file)
+    for path in os.environ['PATH'].split(os.pathsep):
+        full_exe_file_name = os.path.join(path.strip('" '), exe_file)
         if os.path.isfile(full_exe_file_name):
             return full_exe_file_name
 
