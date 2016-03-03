@@ -1,6 +1,7 @@
 /*
  * Copyright © 2015-2016 Oleksii Aliakin. All rights reserved.
  * Author: Oleksii Aliakin (alex@nls.la)
+ * Author: Andrii Shelest
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +25,9 @@ Product {
     property string cppVersion: "c++11"
     property bool extraWarnings: true
 
+    property path targetInstallDir
+    property path targetInstallPrefix
+
     Depends { name: "cpp" }
     cpp.cxxLanguageVersion: cppVersion
     cpp.warningLevel: "all"
@@ -46,13 +50,23 @@ Product {
                 : ["$ORIGIN/../lib"]
 
     Properties {
-        //OS X special compiler configs
-        condition: qbs.targetOS.contains("osx")
-        cpp.cxxStandardLibrary: "libc++"
+        //Clang special configs
+        condition: qbs.toolchain.contains("clang")
+        cpp.cxxStandardLibrary: {
+            if(qbs.targetOS.contains("osx"))
+                return "libc++"
+            else if(qbs.targetOS.contains("linux"))
+                return "libstdc++"
+            else
+                return undefined
+        }
     }
 
     Group {
+        condition: targetInstallPrefix !== undefined
         fileTagsFilter: "application"
+        qbs.installPrefix: targetInstallPrefix
+        qbs.installDir: targetInstallDir
         qbs.install: true
     }
 
@@ -66,4 +80,6 @@ Product {
 
         print("Install to: " + qbs.installRoot)
     }
+
+    cpp.defines: project.generalDefines
 }
