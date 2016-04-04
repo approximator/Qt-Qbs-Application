@@ -17,75 +17,50 @@
 # limitations under the License.
 
 import os
+import sys
 import time
-from subprocess import Popen
-import pyscreenshot as ImageGrab
+from easyprocess import EasyProcess
+from pyvirtualdisplay.smartdisplay import SmartDisplay
 
 
-def get_exe_full_path(exe_file):
-    path, name = os.path.split(exe_file)
-    if path and os.path.isfile(exe_file):
-        return exe_file
+class WinDisplay:
 
-    for path in os.environ['PATH'].split(os.pathsep):
-        full_exe_file_name = os.path.join(path.strip('" '), exe_file)
-        if os.path.isfile(full_exe_file_name):
-            return full_exe_file_name
-
-    return None
+    def waitgrab(self):
+        import pyscreenshot
+        return pyscreenshot.grab()
 
 
-def take_screenshot(out_file):
-    image = ImageGrab.grab()
+def take_screenshot(disp, file_name, timeout, out_file):
+    file_name = os.path.normpath(os.path.abspath(file_name)).split('\\')
+    file_name = '\\\\'.join(file_name)
+    print('Starting {}'.format(file_name))
+    with EasyProcess(file_name):
+        print('Wait for {} sec.'.format(timeout))
+        time.sleep(timeout)
 
-    if len(out_file.split('.')) < 2:
-        out_file += '.png'
-
-    print(out_file)
-    image.save(out_file)
-    print('Screenshot saved to: {}'.format(out_file))
-
-
-class Xvfb:
-    def __init__(self, xvfb_file):
-        self.display = ':5'
-        self.screen = '1280x1024x24'
-        self.xvfb_executable = get_exe_full_path(xvfb_file)
-
-        if not self.xvfb_executable:
-            raise Exception('Sorry, can not find Xvfb executable to start')
-
-        self.process = None
-
-    def start(self):
-        xvfb_args = [self.xvfb_executable, self.display, '-screen 0 {}'.format(self.screen)]
-        print('Starting: {}'.format(' '.join(xvfb_args)))
-        self.process = Popen(xvfb_args)
-
-    def stop(self):
-        if self.process:
-            self.process.terminate()
+        print('Taking screenshot')
+        img = disp.waitgrab()
+        img.save(out_file)
 
 
 if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument('-f', '--file',
-                        required=True,
-                        help='Path to an application')
+    parser.add_argument('-f', '--file', required=True, help='Path to an application')
     parser.add_argument('-o', '--output', required=True, help='Output screenshot file')
-    parser.add_argument('-t', '--timeout', required=False, type=int, default=20, help='Timeout (seconds)')
-    parser.add_argument('-x', '--xvfb', required=False, action='store_true', help='Start Xvfb')
-    parser.add_argument('--xvfb-file', required=False, default='Xvfb', help='Xvfb file')
+    parser.add_argument('-t',
+                        '--timeout',
+                        required=False,
+                        type=int,
+                        default=20,
+                        help='Timeout (seconds)')
     args = parser.parse_args()
 
-    if args.xvfb:
-        xvfb = Xvfb(args.xvfb_file)
-        xvfb.start()
+    input_file_name = os.path.normpath(os.path.abspath(args.file))
+    output_file_name = os.path.normpath(os.path.abspath(args.output))
 
-    app = Popen(args.file)
-    time.sleep(args.timeout)
-    take_screenshot(args.output)
-    app.terminate()
-    if args.xvfb:
-        xvfb.stop()
+    if sys.platform.startswith('win'):
+        take_screenshot(WinDisplay(), input_file_name, args.timeout, output_file_name)
+    else:
+        with SmartDisplay(visible=0, size=(1024, 768), bgcolor='black') as disp:
+            take_screenshot(disp, input_file_name, args.timeout, output_file_name)
