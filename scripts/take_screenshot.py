@@ -31,8 +31,10 @@ class WinDisplay:
 
 
 def take_screenshot(disp, file_name, timeout, out_file):
-    file_name = os.path.normpath(os.path.abspath(file_name)).split('\\')
-    file_name = '\\\\'.join(file_name)
+    file_name = os.path.normpath(os.path.abspath(file_name))
+    if sys.platform.startswith('win'):
+        file_name = '\\\\'.join(file_name.split('\\'))
+
     print('Starting {}'.format(file_name))
     with EasyProcess(file_name):
         print('Wait for {} sec.'.format(timeout))
