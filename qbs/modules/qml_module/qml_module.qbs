@@ -20,32 +20,25 @@ import qbs.File
 import qbs.FileInfo
 
 Module {
+    additionalProductTypes: ["deployed_qml_resource"]
     property path targetDirectory: product.destinationDirectory
-    property string prefix: "modules"
-
-    FileTagger {
-        patterns: "*"
-        fileTags: ["copyable_resource"]
-    }
+    alwaysRun: true
 
     Rule {
-        inputs: ["copyable_resource"]
+        inputs: ["qml_import"]
+        outputFileTags: ["deployed_qml_resource"]
 
         Artifact {
-            fileTags: ["copied_resource"]
+            fileTags: ["deployed_qml_resource"]
             filePath: {
-                var destinationDir = input.moduleProperty("copyable_resource", "targetDirectory");
-                var prefix = input.moduleProperty("copyable_resource", "prefix");
-
-                var sourcePath = FileInfo.joinPaths(product.sourceDirectory, prefix);
-                var subFoldersPath = FileInfo.relativePath(sourcePath, input.filePath);
-
-                if (!destinationDir) {
-                    // If the destination directory has not been explicitly set, replicate the
-                    // structure from the source directory in the build directory.
-                    destinationDir = project.buildDirectory;
-                }
-                return FileInfo.joinPaths(destinationDir, subFoldersPath);
+                var destinationDir = product.moduleProperty("qml_module", "targetDirectory");
+                var output;
+                for (var i in product.qmlImportsPaths)
+                    if(input.filePath.startsWith(product.qmlImportsPaths[i])) {
+                        var relPath = FileInfo.relativePath(product.qmlImportsPaths[i], input.filePath)
+                        output = FileInfo.joinPaths(destinationDir, relPath)
+                    }
+                return output;
             }
         }
 
