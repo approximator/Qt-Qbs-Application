@@ -26,25 +26,34 @@ QtGuiApplication {
     targetName: appShortName
 
     property bool install: true
-    property path installDir: bundle.isBundle ? "Applications" : ""
+    property path installDir: appName
     property path appSourceRoot: sourceDirectory
     property pathList qmlImportsPaths
 
-    property path appBinDir: bundle.isBundle
-                             ? bundle.executableFolderPath
-                             : installDir
-    property path appContentsPath: bundle.isBundle
-                                   ? bundle.contentsFolderPath
-                                   : installDir
-    property path appDataPath: FileInfo.joinPaths(appContentsPath, "Resources/data")
+    property path appBinDir
+    property path appContentsPath
+    property path appDataPath: FileInfo.joinPaths(appContentsPath, "data")
 
-    property path appQmlInstallDir: FileInfo.joinPaths(appContentsPath, "Imports/qtquick2")
-    property path appConfigSourceRoot: FileInfo.joinPaths(appSourceRoot, "../../doc/config/")
-    property path appConfigInstallDir: FileInfo.joinPaths(appContentsPath, "Resources/config")
-    property path appPluginsInstallDir: FileInfo.joinPaths(appDataPath, "Plugins")
+    property path appQmlInstallDir: FileInfo.joinPaths(appContentsPath, "qml")
+    property path appConfigSourceRoot: FileInfo.joinPaths(appSourceRoot, "doc", "config")
+    property path appConfigInstallDir: FileInfo.joinPaths(appContentsPath, "config")
+    property path appPluginsInstallDir: FileInfo.joinPaths(appDataPath, "plugins")
+
+    Properties {
+        condition: bundle.isBundle
+        targetName: appName
+        installDir: "Applications"
+        appBinDir: bundle.executableFolderPath
+        appContentsPath: bundle.contentsFolderPath
+        appDataPath: FileInfo.joinPaths(appContentsPath, "Resources/data")
+
+        appQmlInstallDir: FileInfo.joinPaths(appContentsPath, "Imports/qtquick2")
+        appConfigSourceRoot: FileInfo.joinPaths(appSourceRoot, "doc/config")
+        appConfigInstallDir: FileInfo.joinPaths(appContentsPath, "Resources/config")
+        appPluginsInstallDir: FileInfo.joinPaths(appDataPath, "Plugins")
+    }
 
     property string cppVersion: "c++11"
-
     property stringList generalDefines: [
         'APP_QML_MODULES_PATH="' + Tools.getRelativePath(appBinDir, appQmlInstallDir) + '"',
         'APP_PLUGINS_PATH="' + Tools.getRelativePath(appBinDir, appPluginsInstallDir) + '"',
