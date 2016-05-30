@@ -22,8 +22,12 @@ import qbs.FileInfo
 Product {
     type: "copied_resource"
 
+    Depends {name: "bundle"}
+    Depends {name: "cpp"}
+
+    property string sourcesLocation: sourceDirectory
     property string srcPrefix: "modules"
-    property path targetDirectory: product.destinationDirectory
+    property string targetDirectory: product.destinationDirectory
 
     Depends { name: "copyable_resource" }
     copyable_resource.prefix: srcPrefix
