@@ -34,9 +34,9 @@ QtGuiApplication {
     property path appContentsPath
     property path appDataPath: FileInfo.joinPaths(appContentsPath, "data")
 
-    property path appQmlInstallDir: FileInfo.joinPaths(appContentsPath, "qml")
-    property path appConfigSourceRoot: FileInfo.joinPaths(appSourceRoot, "doc", "config")
-    property path appConfigInstallDir: FileInfo.joinPaths(appContentsPath, "config")
+    property path appQmlInstallDir: FileInfo.joinPaths(appDataPath, "qml")
+    property path appConfigSourceRoot: FileInfo.joinPaths(appSourceRoot, "..", "doc", "config", "/")
+    property path appConfigInstallDir: FileInfo.joinPaths(appDataPath, "config")
     property path appPluginsInstallDir: FileInfo.joinPaths(appDataPath, "plugins")
 
     Properties {
