@@ -1,4 +1,21 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
+#
+# Copyright © 2016 Oleksii Aliakin. All rights reserverd.
+# Author: Oleksii Aliakin (alex@nls.la)
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 import os
 import sys
 import subprocess
@@ -21,13 +38,16 @@ def get_exe_full_path(exe_file):
 
 class QtDeployer():
 
-    def __init__(self, executable, install_dir, data_dir, libraries_dir, qmake, debug_build):
+    def __init__(self, executable, install_dir, data_dir, libraries_dir, qmake, debug_build, libs, qt_plugins, qml):
         self.fgap_exe_file = os.path.normpath(executable)
         self.install_dir = os.path.normpath(install_dir)
         self.data_dir = os.path.normpath(data_dir)
         self.libraries_dir = os.path.normpath(libraries_dir)
         self.qmake = os.path.normpath(qmake)
         self.debug_build = False
+        self.needed_libraries = libs
+        self.plugins = qt_plugins
+        self.needed_qml = qml
         if debug_build == "Debug":
             self.debug_build = True
 
@@ -47,7 +67,7 @@ class QtDeployer():
         self.chrpath = get_exe_full_path('patchelf')
         if not self.chrpath:
             print('Can not find patchelf\nInstall by: sudo apt-get install patchelf')
-            os.exit(1)
+            raise Exception('Error happened while changing rpath')
 
         print('Qt deployer starting...')
         print('executable:\t{}'.format(self.fgap_exe_file))
@@ -131,11 +151,11 @@ class QtDeployer():
             target = os.path.join(self.data_dir, 'plugins', plugin)
             if os.path.exists(target):
                 shutil.rmtree(target)
-            pluginPath = os.path.join(self.qt_plugins_dir, plugin)
-            if os.path.exists(pluginPath):
-                self.copytree(pluginPath, target, symlinks=True)
+            plugin_path = os.path.join(self.qt_plugins_dir, plugin)
+            if os.path.exists(plugin_path):
+                self.copytree(plugin_path, target, symlinks=True)
             else:
-                print('Can not copy {} to {}'.format(pluginPath, target))
+                print('Can not copy {} to {}'.format(plugin_path, target))
 
         if os.path.exists(self.qt_qml_dir):
             print('Copying qt quick 2 imports')
@@ -167,16 +187,6 @@ class QtDeployer():
         self.change_rpath(self.fgap_exe_file,
                           os.path.relpath(self.libraries_dir, os.path.dirname(self.fgap_exe_file)))
 
-        self.plugins = ['iconengines', 'imageformats', 'platformthemes', 'platforminputcontexts',
-                        'platforms', 'xcbglintegrations']
-
-        self.needed_libraries = [
-            'Qt5Core', 'Qt5Widgets', 'Qt5Gui', 'Qt5Qml', 'Qt5Quick', 'Qt5Network', 'Qt5DBus',
-            'Qt5Svg', 'icudata', 'icui18n', 'icuuc', 'pcre'
-        ]
-
-        self.needed_qml = ["Qt", "QtQuick", "QtQuick.2", "QtGraphicalEffects"]
-
         self.needed_libraries = map(lambda lib: 'lib' + lib, self.needed_libraries)
         self.copy_libs()
 
@@ -197,17 +207,20 @@ class QtDeployer():
                     self.change_rpath(d, os.path.relpath(self.libraries_dir, os.path.dirname(d)))
 
 
-if __name__ == "__main__":
+def main():
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument('--app_file',
+    parser.add_argument('--app-file',
                         required=True,
                         help='Path to the application that is being deployed')
-    parser.add_argument('--install_dir', required=False)
-    parser.add_argument('--data_dir', required=False)
-    parser.add_argument('--libraries_dir', required=False)
+    parser.add_argument('--install-dir', required=False)
+    parser.add_argument('--data-dir', required=False)
+    parser.add_argument('--libraries-dir', required=False)
     parser.add_argument('--qmake', required=True)
-    parser.add_argument('--debug_build', required=True, help='"debug" or "release"')
+    parser.add_argument('--debug-build', required=True, help='"debug" or "release"')
+    parser.add_argument('--libs', required=True, type=str, nargs='+')
+    parser.add_argument('--qt-plugins', required=True, type=str, nargs='+')
+    parser.add_argument('--qml', required=True, type=str, nargs='+')
     args = parser.parse_args()
 
     args.app_file = os.path.normpath(args.app_file)
@@ -221,8 +234,19 @@ if __name__ == "__main__":
         args.libraries_dir = os.path.join(args.data_dir, 'lib')
 
     deployer = QtDeployer(
-        os.path.normpath(args.app_file), args.install_dir, args.data_dir, args.libraries_dir,
-        args.qmake, args.debug_build)
+        executable=os.path.normpath(args.app_file),
+        install_dir=args.install_dir,
+        data_dir=args.data_dir,
+        libraries_dir=args.libraries_dir,
+        qmake=args.qmake,
+        debug_build=args.debug_build,
+        libs=args.libs,
+        qt_plugins=args.qt_plugins,
+        qml=args.qml
+    )
     deployer.deploy()
 
     sys.exit(0)  # fixme: return proper code
+
+if __name__ == "__main__":
+    main()
