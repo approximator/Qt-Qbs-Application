@@ -38,7 +38,8 @@ def get_exe_full_path(exe_file):
 
 class QtDeployer():
 
-    def __init__(self, executable, install_dir, data_dir, libraries_dir, qmake, debug_build, libs, qt_plugins, qml):
+    def __init__(self, executable, install_dir, data_dir, libraries_dir, qmake, debug_build, libs,
+                 qt_plugins, qml):
         self.fgap_exe_file = os.path.normpath(executable)
         self.install_dir = os.path.normpath(install_dir)
         self.data_dir = os.path.normpath(data_dir)
@@ -94,13 +95,15 @@ class QtDeployer():
             subprocess.check_call(command)
         except:
             print('Failed to change rpath: {}'.format(filename))
+            return False
+        return True
 
     def get_dependencies(self, file_name, dependencies):
         try:
-            p = subprocess.Popen([file_name],
-                                 stdout=subprocess.PIPE,
-                                 env=dict(os.environ.copy(),
-                                          LD_TRACE_LOADED_OBJECTS='1'))
+            p = subprocess.Popen(
+                [file_name],
+                stdout=subprocess.PIPE,
+                env=dict(os.environ.copy(), LD_TRACE_LOADED_OBJECTS='1'))
             deps, err = p.communicate()
         except OSError:
             return
@@ -118,24 +121,32 @@ class QtDeployer():
 
                 dependencies[lib_name] = lib_dir
 
-    def copy_libs(self):
+    def resolve_libraries_paths(self, libs, directories):
+        lib_ext = '*.so.*'
+        resolved_libs = set()
+        for needed_lib in libs:
+            for dir in directories:
+                resolved_libs = resolved_libs.union(set(glob(os.path.join(dir, needed_lib +
+                                                                          lib_ext))))
+        return resolved_libs
+
+    def copy_libs(self, libs):
         print('copying Qt libraries...')
 
-        lib_ext = '*.so.*'
         dest = self.libraries_dir
         symlinks = []
 
-        for needed_lib in self.needed_libraries:
-            for lib in glob(os.path.join(self.qt_libs_dir, needed_lib + lib_ext)):
-                if os.path.islink(lib):
-                    symlinks.append((os.readlink(lib), os.path.join(dest, os.path.basename(lib))))
-                else:
-                    if not os.path.exists(dest):
-                        os.makedirs(dest)
-                    copy_to = os.path.join(dest, os.path.basename(lib))
-                    shutil.copy2(lib, copy_to)
-                    if self.is_executable(copy_to):
-                        self.change_rpath(copy_to, os.path.relpath(dest, self.libraries_dir))
+        for lib in libs:
+            if os.path.islink(lib):
+                symlinks.append((os.readlink(lib), os.path.join(dest, os.path.basename(lib))))
+            else:
+                if not os.path.exists(dest):
+                    os.makedirs(dest)
+                copy_to = os.path.join(dest, os.path.basename(lib))
+                print('Copying {} -> {}'.format(lib, copy_to))
+                shutil.copy2(lib, copy_to)
+                if self.is_executable(copy_to):
+                    self.change_rpath(copy_to, os.path.relpath(dest, self.libraries_dir))
         # making symlinks after all the libs were copied
         for symlink in symlinks:
             try:
@@ -146,6 +157,26 @@ class QtDeployer():
                 print('Error while creating the links {} -> {}'.format(
                     os.path.basename(symlink[0]), symlink[1]))
 
+    # def copy_libs(self, libs):
+    #     print('copying Qt libraries...')
+    #     dest = self.libraries_dir
+    #
+    #     for lib in libs:
+    #         lib_real_path = lib
+    #         while os.path.islink(lib_real_path):
+    #             lib_real_path = os.path.realpath(
+    #                 os.path.join(os.path.dirname(lib_real_path), os.readlink(lib_real_path)))
+    #
+    #         if not os.path.exists(dest):
+    #             os.makedirs(dest)
+    #
+    #         copy_to = os.path.join(dest, os.path.basename(lib))
+    #         print('Copying {} -> {}'.format(lib_real_path, copy_to))
+    #         shutil.copy2(lib_real_path, copy_to)
+    #         if self.is_executable(copy_to):
+    #             self.change_rpath(copy_to, os.path.relpath(dest, self.libraries_dir))
+
+    def copy_plugins(self):
         print('Copying plugins: {}'.format(self.plugins))
         for plugin in self.plugins:
             target = os.path.join(self.data_dir, 'plugins', plugin)
@@ -157,41 +188,33 @@ class QtDeployer():
             else:
                 print('Can not copy {} to {}'.format(plugin_path, target))
 
+    def copy_qml(self):
         if os.path.exists(self.qt_qml_dir):
             print('Copying qt quick 2 imports')
             target = os.path.join(self.data_dir, 'qml')
 
-            for lib in filter(lambda x: os.path.basename(x) in self.needed_qml,
-                              glob(self.qt_qml_dir + '/*')):
+            qmls = glob(self.qt_qml_dir + '/*')
+            for lib in filter(lambda x: os.path.basename(x) in self.needed_qml, qmls):
                 self.copytree(lib, os.path.join(target, os.path.basename(lib)), symlinks=True)
         else:
             print('Error {} does not exist.'.format(self.qt_qml_dir))
 
-    def copy_libclang(self, data_dir, llvm_install_dir):
-        libsource = os.path.join(llvm_install_dir, 'lib', 'libclang.so')
-        libtarget = os.path.join(self.libraries_dir)
-        if sys.platform.startswith("win"):
-            libsource = os.path.join(llvm_install_dir, '..', 'libclang.dll')
-            libtarget = os.path.join(data_dir, '..')
-        resourcesource = os.path.join(llvm_install_dir, 'lib', 'clang')
-        resourcetarget = os.path.join(data_dir, 'share', 'cplusplus', 'clang')
-        print('copying libclang...')
-        shutil.copy(libsource, libtarget)
-        if not sys.platform.startswith('win') and os.access(d, os.X_OK):
-            self.change_rpath(libtarget)
-        if os.path.exists(resourcetarget):
-            shutil.rmtree(resourcetarget)
-        self.copytree(resourcesource, resourcetarget, symlinks=True)
-
     def deploy(self):
-        self.change_rpath(self.fgap_exe_file,
-                          os.path.relpath(self.libraries_dir, os.path.dirname(self.fgap_exe_file)))
+        changed = self.change_rpath(
+            self.fgap_exe_file,
+            os.path.relpath(self.libraries_dir, os.path.dirname(self.fgap_exe_file)))
+        if not changed:
+            raise Exception('Error happened while changing rpath')
 
-        self.needed_libraries = map(lambda lib: 'lib' + lib, self.needed_libraries)
-        self.copy_libs()
+        libs = self.resolve_libraries_paths(
+            map(lambda lib: 'lib' + lib, self.needed_libraries),
+            [self.qt_libs_dir, '/usr/lib', '/usr/lib/x86_64-linux-gnu'])
+        # deps = {}
+        # self.get_dependencies(self.fgap_exe_file, deps)
 
-        if 'LLVM_INSTALL_DIR' in os.environ:
-            self.copy_libclang(self.data_dir, os.environ["LLVM_INSTALL_DIR"])
+        self.copy_libs(libs)
+        self.copy_plugins()
+        self.copy_qml()
 
     def copytree(self, src, dst, symlinks=False, ignore=None):
         if not os.path.exists(dst):
@@ -233,20 +256,19 @@ def main():
     if not args.libraries_dir:
         args.libraries_dir = os.path.join(args.data_dir, 'lib')
 
-    deployer = QtDeployer(
-        executable=os.path.normpath(args.app_file),
-        install_dir=args.install_dir,
-        data_dir=args.data_dir,
-        libraries_dir=args.libraries_dir,
-        qmake=args.qmake,
-        debug_build=args.debug_build,
-        libs=args.libs,
-        qt_plugins=args.qt_plugins,
-        qml=args.qml
-    )
+    deployer = QtDeployer(executable=os.path.normpath(args.app_file),
+                          install_dir=args.install_dir,
+                          data_dir=args.data_dir,
+                          libraries_dir=args.libraries_dir,
+                          qmake=args.qmake,
+                          debug_build=args.debug_build,
+                          libs=args.libs,
+                          qt_plugins=args.qt_plugins,
+                          qml=args.qml)
     deployer.deploy()
+    return 0
 
-    sys.exit(0)  # fixme: return proper code
 
 if __name__ == "__main__":
-    main()
+    result = main()
+    sys.exit(result)
