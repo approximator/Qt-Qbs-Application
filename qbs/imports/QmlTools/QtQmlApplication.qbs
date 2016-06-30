@@ -28,7 +28,7 @@ QtGuiApplication {
     property bool install: true
     property path installDir: appName
     property path appSourceRoot: sourceDirectory
-    property pathList qmlImportsPaths
+    property pathList qmlImportsPaths: []
 
     property path appBinDir
     property path appContentsPath
@@ -122,7 +122,7 @@ QtGuiApplication {
     }
 
     Group {
-        condition: qmlImportsPaths !== undefined
+        condition: qmlImportsPaths.length > 0
         name: "QmlImports"
         fileTags: ["qml_import"]
         files: qmlImportsPaths.map(function(path) { return path + "/**/" })
