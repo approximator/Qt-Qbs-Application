@@ -128,20 +128,46 @@ QtGuiApplication {
         files: qmlImportsPaths.map(function(path) { return path + "/**/" })
     }
 
+    Group {
+        name: "appInfo"
+        files: "*.h"
+        fileTags: ["appInfo"]
+    }
+
     Depends{ name: "qml_module" }
     qml_module.targetDirectory: FileInfo.joinPaths(qbs.installRoot,
                                                    installDir,
                                                    product.appQmlInstallDir)
 
+    type: ["appInfo"]       // TODO: is it really necessary?
+    Rule {
+        inputs: ["qbs"]     // needed to trigger this rule
+        Artifact {
+            filePath: "app_info.h"
+            fileTags: "appInfo"
+        }
+        prepare: {
+            var run = "touch"
+            var appInfoFileName = FileInfo.joinPaths(product.buildDirectory, "app_info.h")
+            var cmd = new Command(run, appInfoFileName)
+            cmd.description = "Generating appinfo: " + appInfoFileName
+            cmd.highlight = "codegen";
+            return cmd
+        }
+    }
+
     /* Some debug output */
     property string debug: {
-        print("Cpp version: " + cpp.cxxLanguageVersion)
-        print("System include paths:")
+        print("\n\n ================= Build info =================\n")
+        print("    Cpp version: " + cpp.cxxLanguageVersion)
+        print("    System include paths:")
         cpp.systemIncludePaths.forEach(function(path) {
-            print("    " + path);
+            print("        " + path);
         })
 
-        print("Install to: " + qbs.installRoot)
+        print("    Build dir: " + buildDirectory)
+        print("    Install to: " + qbs.installRoot)
+        print("\n ==============================================\n\n")
     }
 
 }
