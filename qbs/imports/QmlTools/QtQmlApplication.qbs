@@ -38,6 +38,8 @@ QtGuiApplication {
     property path appConfigSourceRoot: FileInfo.joinPaths(appSourceRoot, "..", "doc", "config", "/")
     property path appConfigInstallDir: FileInfo.joinPaths(appDataPath, "config")
     property path appPluginsInstallDir: FileInfo.joinPaths(appDataPath, "plugins")
+    property path appLibsInstallDir: FileInfo.joinPaths("", "lib")
+    property path appIncludesInstallDir: FileInfo.joinPaths(appDataPath, "include")
 
     Properties {
         condition: bundle.isBundle
@@ -51,10 +53,13 @@ QtGuiApplication {
         appConfigSourceRoot: FileInfo.joinPaths(appSourceRoot, "doc/config")
         appConfigInstallDir: FileInfo.joinPaths(appContentsPath, "Resources/config")
         appPluginsInstallDir: FileInfo.joinPaths(appDataPath, "Plugins")
+        appLibsInstallDir: FileInfo.joinPaths(appDataPath, "Frameworks")
+        appIncludesInstallDir: FileInfo.joinPaths(appDataPath, "Include")
     }
 
     property string cppVersion: "c++11"
-    property stringList generalDefines: [
+    property stringList generalDefines: []
+    property stringList appDefines: [
         'APP_QML_MODULES_PATH="' + Tools.getRelativePath(appBinDir, appQmlInstallDir) + '"',
         'APP_PLUGINS_PATH="' + Tools.getRelativePath(appBinDir, appPluginsInstallDir) + '"',
         'APP_CONFIG_PATH="' + Tools.getRelativePath(appBinDir, appConfigInstallDir) + '"'
@@ -78,10 +83,10 @@ QtGuiApplication {
         ]
     }
 
-    cpp.defines: generalDefines
+    cpp.defines: appDefines.concat(generalDefines)
     cpp.rpaths: qbs.targetOS.contains("osx")
-                ? ["@executable_path/../Frameworks"]
-                : ["$ORIGIN/", "$ORIGIN/../lib", "$ORIGIN/lib"]
+                ? ["@executable_path/" + Tools.getRelativePath(appBinDir, appLibsInstallDir)]
+                : ["$ORIGIN/", "$ORIGIN/" + Tools.getRelativePath(appBinDir, appLibsInstallDir)]
 
     Properties {
         //Clang special configs
@@ -103,6 +108,12 @@ QtGuiApplication {
     }
 
     Group {
+        fileTagsFilter: ["public_headers"]
+        qbs.install: install
+        qbs.installDir: FileInfo.joinPaths(installDir, appIncludesInstallDir)
+    }
+
+    Group {
         fileTagsFilter: ["aggregate_infoplist"]
         qbs.install: install && bundle.isBundle
                      && !bundle.embedInfoPlist
@@ -117,7 +128,7 @@ QtGuiApplication {
 
     Group {
         fileTagsFilter: ["jsonConfigs"]
-        qbs.install: true
+        qbs.install: install
         qbs.installDir: FileInfo.joinPaths(installDir, appConfigInstallDir)
     }
 
@@ -125,7 +136,7 @@ QtGuiApplication {
         condition: qmlImportsPaths.length > 0
         name: "QmlImports"
         fileTags: ["qml_import"]
-        files: qmlImportsPaths.map(function(path) { return path + "/**/" })
+        files: condition ? qmlImportsPaths.map(function(path) { return path + "/**/" }) : []
     }
 
     Depends{ name: "qml_module" }
