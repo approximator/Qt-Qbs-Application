@@ -21,8 +21,8 @@ import qbs.FileInfo
 import "qmlTools.js" as Tools
 
 QtGuiApplication {
-    property string appShortName: name
     property string appName: name
+    property string appShortName: appName
     targetName: appShortName
 
     property bool install: true
