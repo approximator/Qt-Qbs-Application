@@ -132,16 +132,4 @@ QtGuiApplication {
     qml_module.targetDirectory: FileInfo.joinPaths(qbs.installRoot,
                                                    installDir,
                                                    product.appQmlInstallDir)
-
-    /* Some debug output */
-    property string debug: {
-        print("Cpp version: " + cpp.cxxLanguageVersion)
-        print("System include paths:")
-        cpp.systemIncludePaths.forEach(function(path) {
-            print("    " + path);
-        })
-
-        print("Install to: " + qbs.installRoot)
-    }
-
 }

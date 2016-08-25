@@ -1,5 +1,5 @@
-/*
-* Copyright © 2015-2016 Oleksii Aliakin. All rights reserved.
+/*!
+* Copyright © 2016 Oleksii Aliakin. All rights reserved.
 * Author: Oleksii Aliakin (alex@nls.la)
 * Author: Andrii Shelest
 *
@@ -17,14 +17,14 @@
 */
 
 import qbs
+import qbs.FileInfo
 
-Project
-{
-    name: "examples"
+Project {
+    name: "qt-qbs-application"
 
-    property path appSourceRoot: sourceDirectory
+    qbsSearchPaths: "qbs"
 
     references: [
-        "SimpleQtQmlApp/SimpleQtQmlApp.qbs"
+        "examples/examples.qbs",
     ]
 }
