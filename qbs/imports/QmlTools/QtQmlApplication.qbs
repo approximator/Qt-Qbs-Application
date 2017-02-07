@@ -26,7 +26,7 @@ QtGuiApplication {
     targetName: appShortName
 
     property bool install: true
-    property path installDir: appName
+    property path appInstallDir: appName
     property path appSourceRoot: sourceDirectory
     property pathList qmlImportsPaths: []
 
@@ -44,7 +44,7 @@ QtGuiApplication {
     Properties {
         condition: bundle.isBundle
         targetName: appName
-        installDir: "Applications"
+        appInstallDir: "Applications"
         appBinDir: bundle.executableFolderPath
         appContentsPath: bundle.contentsFolderPath
         appDataPath: FileInfo.joinPaths(appContentsPath, "Resources/data")
@@ -101,35 +101,37 @@ QtGuiApplication {
         }
     }
 
+    qmlImportPaths: qmlImportsPaths
+
     Group {
         fileTagsFilter: ["application"]
         qbs.install: install
-        qbs.installDir: bundle.isBundle ? FileInfo.joinPaths(installDir, appBinDir) : installDir
+        qbs.installDir: bundle.isBundle ? FileInfo.joinPaths(product.appInstallDir, appBinDir) : product.appInstallDir
     }
 
     Group {
         fileTagsFilter: ["public_headers"]
         qbs.install: install
-        qbs.installDir: FileInfo.joinPaths(installDir, appIncludesInstallDir)
+        qbs.installDir: FileInfo.joinPaths(product.appInstallDir, appIncludesInstallDir)
     }
 
     Group {
         fileTagsFilter: ["aggregate_infoplist"]
         qbs.install: install && bundle.isBundle
                      && !bundle.embedInfoPlist
-        qbs.installDir: FileInfo.joinPaths(installDir, FileInfo.path(bundle.infoPlistPath))
+        qbs.installDir: FileInfo.joinPaths(product.appInstallDir, FileInfo.path(bundle.infoPlistPath))
     }
 
     Group {
         fileTagsFilter: ["pkginfo"]
         qbs.install: install && bundle.isBundle
-        qbs.installDir: FileInfo.joinPaths(installDir, FileInfo.path(bundle.pkgInfoPath))
+        qbs.installDir: FileInfo.joinPaths(product.appInstallDir, FileInfo.path(bundle.pkgInfoPath))
     }
 
     Group {
         fileTagsFilter: ["jsonConfigs"]
         qbs.install: install
-        qbs.installDir: FileInfo.joinPaths(installDir, appConfigInstallDir)
+        qbs.installDir: FileInfo.joinPaths(product.appInstallDir, appConfigInstallDir)
     }
 
     Group {
@@ -141,18 +143,18 @@ QtGuiApplication {
 
     Depends{ name: "qml_module" }
     qml_module.targetDirectory: FileInfo.joinPaths(qbs.installRoot,
-                                                   installDir,
+                                                   product.appInstallDir,
                                                    product.appQmlInstallDir)
 
     /* Some debug output */
     property string debug: {
-        print("Cpp version: " + cpp.cxxLanguageVersion)
-        print("System include paths:")
+        console.info("Cpp version: " + cpp.cxxLanguageVersion)
+        console.info("System include paths:")
         cpp.systemIncludePaths.forEach(function(path) {
-            print("    " + path);
+            console.info("    " + path);
         })
 
-        print("Install to: " + qbs.installRoot)
+        console.info("Install to: " + qbs.installRoot)
     }
 
 }
