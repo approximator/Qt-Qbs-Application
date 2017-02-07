@@ -25,6 +25,8 @@ DynamicLibrary {
             "dynamiclibrary_symlink",
             "dynamiclibrary_import"
         ]
+        overrideTags: true
+        fileTags: ["installable_lib"]
         qbs.install: install
         qbs.installDir: bundle.isBundle
                         ? FileInfo.joinPaths(installDir, FileInfo.path(bundle.executablePath))
@@ -36,4 +38,5 @@ DynamicLibrary {
         qbs.install: install && bundle.isBundle && !bundle.embedInfoPlist
         qbs.installDir: FileInfo.joinPaths(installDir, FileInfo.path(bundle.infoPlistPath))
     }
+
 }

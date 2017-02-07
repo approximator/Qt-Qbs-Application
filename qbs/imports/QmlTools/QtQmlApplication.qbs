@@ -21,12 +21,12 @@ import qbs.FileInfo
 import "qmlTools.js" as Tools
 
 QtGuiApplication {
-    property string appShortName: name
     property string appName: name
+    property string appShortName: appName
     targetName: appShortName
 
     property bool install: true
-    property path installDir: appName
+    property path appInstallDir: appName
     property path appSourceRoot: sourceDirectory
     property pathList qmlImportsPaths: []
 
@@ -38,11 +38,13 @@ QtGuiApplication {
     property path appConfigSourceRoot: FileInfo.joinPaths(appSourceRoot, "..", "doc", "config", "/")
     property path appConfigInstallDir: FileInfo.joinPaths(appDataPath, "config")
     property path appPluginsInstallDir: FileInfo.joinPaths(appDataPath, "plugins")
+    property path appLibsInstallDir: FileInfo.joinPaths("", "lib")
+    property path appIncludesInstallDir: FileInfo.joinPaths(appDataPath, "include")
 
     Properties {
         condition: bundle.isBundle
         targetName: appName
-        installDir: "Applications"
+        appInstallDir: "Applications"
         appBinDir: bundle.executableFolderPath
         appContentsPath: bundle.contentsFolderPath
         appDataPath: FileInfo.joinPaths(appContentsPath, "Resources/data")
@@ -51,10 +53,13 @@ QtGuiApplication {
         appConfigSourceRoot: FileInfo.joinPaths(appSourceRoot, "doc/config")
         appConfigInstallDir: FileInfo.joinPaths(appContentsPath, "Resources/config")
         appPluginsInstallDir: FileInfo.joinPaths(appDataPath, "Plugins")
+        appLibsInstallDir: FileInfo.joinPaths(appDataPath, "Frameworks")
+        appIncludesInstallDir: FileInfo.joinPaths(appDataPath, "Include")
     }
 
     property string cppVersion: "c++11"
-    property stringList generalDefines: [
+    property stringList generalDefines: []
+    property stringList appDefines: [
         'APP_QML_MODULES_PATH="' + Tools.getRelativePath(appBinDir, appQmlInstallDir) + '"',
         'APP_PLUGINS_PATH="' + Tools.getRelativePath(appBinDir, appPluginsInstallDir) + '"',
         'APP_CONFIG_PATH="' + Tools.getRelativePath(appBinDir, appConfigInstallDir) + '"'
@@ -78,10 +83,10 @@ QtGuiApplication {
         ]
     }
 
-    cpp.defines: generalDefines
+    cpp.defines: appDefines.concat(generalDefines)
     cpp.rpaths: qbs.targetOS.contains("osx")
-                ? ["@executable_path/../Frameworks"]
-                : ["$ORIGIN/", "$ORIGIN/../lib", "$ORIGIN/lib"]
+                ? ["@executable_path/" + Tools.getRelativePath(appBinDir, appLibsInstallDir)]
+                : ["$ORIGIN/", "$ORIGIN/" + Tools.getRelativePath(appBinDir, appLibsInstallDir)]
 
     Properties {
         //Clang special configs
@@ -96,40 +101,59 @@ QtGuiApplication {
         }
     }
 
+    qmlImportPaths: qmlImportsPaths
+
     Group {
         fileTagsFilter: ["application"]
         qbs.install: install
-        qbs.installDir: bundle.isBundle ? FileInfo.joinPaths(installDir, appBinDir) : installDir
+        qbs.installDir: bundle.isBundle ? FileInfo.joinPaths(product.appInstallDir, appBinDir) : product.appInstallDir
+    }
+
+    Group {
+        fileTagsFilter: ["public_headers"]
+        qbs.install: install
+        qbs.installDir: FileInfo.joinPaths(product.appInstallDir, appIncludesInstallDir)
     }
 
     Group {
         fileTagsFilter: ["aggregate_infoplist"]
         qbs.install: install && bundle.isBundle
                      && !bundle.embedInfoPlist
-        qbs.installDir: FileInfo.joinPaths(installDir, FileInfo.path(bundle.infoPlistPath))
+        qbs.installDir: FileInfo.joinPaths(product.appInstallDir, FileInfo.path(bundle.infoPlistPath))
     }
 
     Group {
         fileTagsFilter: ["pkginfo"]
         qbs.install: install && bundle.isBundle
-        qbs.installDir: FileInfo.joinPaths(installDir, FileInfo.path(bundle.pkgInfoPath))
+        qbs.installDir: FileInfo.joinPaths(product.appInstallDir, FileInfo.path(bundle.pkgInfoPath))
     }
 
     Group {
         fileTagsFilter: ["jsonConfigs"]
-        qbs.install: true
-        qbs.installDir: FileInfo.joinPaths(installDir, appConfigInstallDir)
+        qbs.install: install
+        qbs.installDir: FileInfo.joinPaths(product.appInstallDir, appConfigInstallDir)
     }
 
     Group {
         condition: qmlImportsPaths.length > 0
         name: "QmlImports"
         fileTags: ["qml_import"]
-        files: qmlImportsPaths.map(function(path) { return path + "/**/" })
+        files: condition ? qmlImportsPaths.map(function(path) { return path + "/**/" }) : []
     }
 
     Depends{ name: "qml_module" }
     qml_module.targetDirectory: FileInfo.joinPaths(qbs.installRoot,
-                                                   installDir,
+                                                   product.appInstallDir,
                                                    product.appQmlInstallDir)
+
+    /* Some debug output */
+    property string debug: {
+        console.info("Cpp version: " + cpp.cxxLanguageVersion)
+        console.info("System include paths:")
+        cpp.systemIncludePaths.forEach(function(path) {
+            console.info("    " + path);
+        })
+
+        console.info("Install to: " + qbs.installRoot)
+    }
 }
