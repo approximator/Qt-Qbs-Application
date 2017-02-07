@@ -28,7 +28,7 @@ QmlTools.QtQmlApplication
     Depends { name: "Qt"; submodules: [ "qml", "quick" ] }
 
     qmlImportsPaths: [
-        FileInfo.joinPaths(project.appSourceRoot, "imports")
+        FileInfo.joinPaths(project.appSourceRoot, "examples", "SimpleQtQmlApp", "imports")
     ]
 
     /* Main source file */
@@ -42,5 +42,16 @@ QmlTools.QtQmlApplication
     Group {
         name: "Resources"
         files: "qml.qrc"
+    }
+
+    /* Some debug output */
+    property string debug: {
+        print("Cpp version: " + cpp.cxxLanguageVersion)
+        print("qmlImportsPaths:")
+        qmlImportsPaths.forEach(function(path) {
+            print("    " + path);
+        })
+
+        print("Install to: " + qbs.installRoot)
     }
 }

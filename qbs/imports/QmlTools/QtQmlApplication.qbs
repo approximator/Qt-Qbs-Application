@@ -156,5 +156,4 @@ QtGuiApplication {
 
         console.info("Install to: " + qbs.installRoot)
     }
-
 }

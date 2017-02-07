@@ -1,0 +1,61 @@
+os: Visual Studio 2015
+version: 1.0.{build}
+
+environment:
+  QTDIR: C:\Qt\5.7\msvc2015_64
+  PYTHON: "C:\\Python34"
+  INSTALL_DIR: "%APPVEYOR_BUILD_FOLDER%\\install"
+  matrix:
+  - BUILD_VARIANT: debug
+    ADDITIONAL_PARAMS: "qbs.installRoot:%INSTALL_DIR%"
+  - BUILD_VARIANT: release
+    ADDITIONAL_PARAMS: "qbs.installRoot:%INSTALL_DIR%"
+
+install:
+  - cmd: git submodule update --init --recursive
+  - cmd: curl -fsS -o rclone.zip http://downloads.rclone.org/rclone-v1.28-windows-386.zip && 7z e rclone.zip
+  - cmd: set PATH=%PYTHON%;%PYTHON%\Scripts;%QTDIR%\bin;C:\Qt\Tools\QtCreator\bin;%PATH%;%cd%;%cd%\rclone-v1.28-windows-386
+  - cmd: set APP_DIR=%INSTALL_DIR%\\simpleQtQmlApp
+  - cmd: set SCREENSHOTS_DIR=%INSTALL_DIR%
+  - cmd: python -m pip install --upgrade pip && pip install --upgrade wheel -V && pip install --upgrade PySide easyprocess Pillow pyscreenshot pyvirtualdisplay -V &&  pip install --upgrade --trusted-host wxpython.org --pre -f http://wxpython.org/Phoenix/snapshot-builds/ wxPython_Phoenix -V
+  - cmd: IF DEFINED INSTALL_MATPLOTLIB ( pip install --upgrade --pre https://pypi.python.org/packages/cp34/m/matplotlib/matplotlib-1.5.1-cp34-none-win32.whl -V )
+  - python --version
+  - pip --version
+
+build_script:
+- cmd: >-
+
+    qbs setup-toolchains --detect
+
+    qbs setup-qt %QTDIR%\bin\qmake.exe qt
+
+    qbs config defaultProfile qt
+
+    qbs --file %APPVEYOR_BUILD_FOLDER% --command-echo-mode command-line --clean-install-root %ADDITIONAL_PARAMS% %BUILD_VARIANT%
+
+    dir %APPVEYOR_BUILD_FOLDER%
+
+    dir %INSTALL_DIR%
+
+    windeployqt --%BUILD_VARIANT% --no-system-d3d-compiler --no-translations --no-qmltooling --qmldir %APPVEYOR_BUILD_FOLDER%\examples\SimpleQtQmlApp\imports\Simple %APP_DIR%
+
+# copy deployed files to needed locations (will be fixed in the future)
+- cmd: >-
+
+    cd %APP_DIR%
+
+    dir
+
+    FOR %%G IN ( iconengines imageformats platforms platforminputcontexts scenegraph ) DO ( IF EXIST %%G ( rclone copy %%G data\plugins\%%G\ && rmdir %%G /s /q  && echo "Copied and removed: %%G" ) )
+
+    FOR %%G IN ( Qt QtGraphicalEffects QtQml QtQuick QtQuick.2 Qt3D ) DO ( IF EXIST %%G ( rclone copy %%G data\qml\%%G && rmdir %%G /s /q && echo "Copied and removed: %%G" ) )
+
+    dir
+
+    dir data\qml\
+
+    python -u %APPVEYOR_BUILD_FOLDER%\\scripts\\take_screenshot.py -f %INSTALL_DIR%\\simpleQtQmlApp\\qtQmlsimple.exe -t 55 -o %SCREENSHOTS_DIR%\\screenshot.png
+
+artifacts:
+- path: install
+  name: simpleQtQmlApp
