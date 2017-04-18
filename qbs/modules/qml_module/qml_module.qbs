@@ -33,9 +33,9 @@ Module {
             filePath: {
                 var destinationDir = product.moduleProperty("qml_module", "targetDirectory");
                 var output;
-                for (var i in product.qmlImportsPaths)
-                    if(input.filePath.startsWith(product.qmlImportsPaths[i])) {
-                        var relPath = FileInfo.relativePath(product.qmlImportsPaths[i], input.filePath)
+                for (var i in product.qmlImportPaths)
+                    if(input.filePath.startsWith(product.qmlImportPaths[i])) {
+                        var relPath = FileInfo.relativePath(product.qmlImportPaths[i], input.filePath)
                         output = FileInfo.joinPaths(destinationDir, relPath)
                     }
                 return output;

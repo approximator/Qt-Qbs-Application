@@ -27,7 +27,7 @@ QmlTools.QtQmlApplication
 
     Depends { name: "Qt"; submodules: [ "qml", "quick" ] }
 
-    qmlImportsPaths: [
+    qmlImportPaths: [
         FileInfo.joinPaths(project.appSourceRoot, "examples", "SimpleQtQmlApp", "imports")
     ]
 
@@ -47,8 +47,8 @@ QmlTools.QtQmlApplication
     /* Some debug output */
     property string debug: {
         print("Cpp version: " + cpp.cxxLanguageVersion)
-        print("qmlImportsPaths:")
-        qmlImportsPaths.forEach(function(path) {
+        print("qmlImportPaths:")
+        qmlImportPaths.forEach(function(path) {
             print("    " + path);
         })
 
