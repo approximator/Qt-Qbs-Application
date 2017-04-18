@@ -28,7 +28,7 @@ QtGuiApplication {
     property bool install: true
     property path appInstallDir: appName
     property path appSourceRoot: sourceDirectory
-    property pathList qmlImportsPaths: []
+    property pathList qmlImportPaths: []
 
     property path appBinDir
     property path appContentsPath
@@ -101,8 +101,6 @@ QtGuiApplication {
         }
     }
 
-    qmlImportPaths: qmlImportsPaths
-
     Group {
         fileTagsFilter: ["application"]
         qbs.install: install
@@ -135,10 +133,10 @@ QtGuiApplication {
     }
 
     Group {
-        condition: qmlImportsPaths.length > 0
+        condition: qmlImportPaths.length > 0
         name: "QmlImports"
         fileTags: ["qml_import"]
-        files: condition ? qmlImportsPaths.map(function(path) { return path + "/**/" }) : []
+        files: condition ? qmlImportPaths.map(function(path) { return path + "/**/" }) : []
     }
 
     Depends{ name: "qml_module" }

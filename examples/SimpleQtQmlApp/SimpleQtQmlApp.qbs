@@ -27,7 +27,7 @@ QmlTools.QtQmlApplication
 
     Depends { name: "Qt"; submodules: [ "qml", "quick" ] }
 
-    qmlImportsPaths: [
+    qmlImportPaths: [
         FileInfo.joinPaths(project.appSourceRoot, "examples", "SimpleQtQmlApp", "imports")
     ]
 
