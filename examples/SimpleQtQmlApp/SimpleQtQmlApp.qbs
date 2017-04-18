@@ -47,8 +47,8 @@ QmlTools.QtQmlApplication
     /* Some debug output */
     property string debug: {
         print("Cpp version: " + cpp.cxxLanguageVersion)
-        print("qmlImportsPaths:")
-        qmlImportsPaths.forEach(function(path) {
+        print("qmlImportPaths:")
+        qmlImportPaths.forEach(function(path) {
             print("    " + path);
         })
 

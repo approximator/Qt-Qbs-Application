@@ -2,25 +2,43 @@ os: Visual Studio 2015
 version: 1.0.{build}
 
 environment:
-  QTDIR: C:\Qt\5.7\msvc2015_64
   PYTHON: "C:\\Python34"
   INSTALL_DIR: "%APPVEYOR_BUILD_FOLDER%\\install"
+  ADDITIONAL_PARAMS: "qbs.installRoot:%INSTALL_DIR%"
+
   matrix:
   - BUILD_VARIANT: debug
-    ADDITIONAL_PARAMS: "qbs.installRoot:%INSTALL_DIR%"
+    QTDIR: C:\Qt\5.6\msvc2015_64
+
   - BUILD_VARIANT: release
-    ADDITIONAL_PARAMS: "qbs.installRoot:%INSTALL_DIR%"
+    QTDIR: C:\Qt\5.6\msvc2015_64
+
+  - BUILD_VARIANT: debug
+    QTDIR: C:\Qt\5.7\msvc2015_64
+
+  - BUILD_VARIANT: release
+    QTDIR: C:\Qt\5.7\msvc2015_64
+
+  - BUILD_VARIANT: debug
+    QTDIR: C:\Qt\5.8\msvc2015_64
+
+  - BUILD_VARIANT: release
+    QTDIR: C:\Qt\5.8\msvc2015_64
 
 install:
+  - cmd: dir C:\Qt\
+  - cmd: dir C:\Qt\5.8
   - cmd: git submodule update --init --recursive
-  - cmd: curl -fsS -o rclone.zip http://downloads.rclone.org/rclone-v1.28-windows-386.zip && 7z e rclone.zip
-  - cmd: set PATH=%PYTHON%;%PYTHON%\Scripts;%QTDIR%\bin;C:\Qt\Tools\QtCreator\bin;%PATH%;%cd%;%cd%\rclone-v1.28-windows-386
+  - cmd: curl -fsS -o rclone.zip https://downloads.rclone.org/rclone-current-windows-amd64.zip && 7z e rclone.zip
+  - cmd: set PATH=%PYTHON%;%PYTHON%\Scripts;%QTDIR%\bin;C:\Qt\Tools\QtCreator\bin;%PATH%;%cd%
+  - cmd: dir %cd%
   - cmd: set APP_DIR=%INSTALL_DIR%\\simpleQtQmlApp
   - cmd: set SCREENSHOTS_DIR=%INSTALL_DIR%
-  - cmd: python -m pip install --upgrade pip && pip install --upgrade wheel -V && pip install --upgrade PySide easyprocess Pillow pyscreenshot pyvirtualdisplay -V &&  pip install --upgrade --trusted-host wxpython.org --pre -f http://wxpython.org/Phoenix/snapshot-builds/ wxPython_Phoenix -V
+  - cmd: python -m pip install --upgrade pip && pip install --upgrade wheel -V && pip install --upgrade PySide easyprocess Pillow pyscreenshot pyvirtualdisplay -V
   - cmd: IF DEFINED INSTALL_MATPLOTLIB ( pip install --upgrade --pre https://pypi.python.org/packages/cp34/m/matplotlib/matplotlib-1.5.1-cp34-none-win32.whl -V )
   - python --version
   - pip --version
+  - ps: $screen_resolution = '1280x800'; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
 
 build_script:
 - cmd: >-
