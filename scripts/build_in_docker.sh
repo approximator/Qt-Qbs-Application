@@ -29,7 +29,7 @@ ENTRY_POINT="/tmp/dock_${PROJECT_NAME}_entry_point.sh"
 : ${SRC_DIR:=$(cd $SCRIPT_DIR/../ && pwd)}
 : ${INSTALL_DIR:="/tmp/docker/$PROJECT_NAME"}
 : ${BUILD_VARIANT:="release"}
-: ${QBS_VERSION:="qbs:1.7.2.Qt5.7.1"}
+: ${QBS_VERSION:="qbs:latest"}
 
 INSTALL_DIR=${INSTALL_DIR}
 
