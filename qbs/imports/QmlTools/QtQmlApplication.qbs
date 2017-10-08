@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015-2016 Oleksii Aliakin. All rights reserved.
+ * Copyright © 2015-2017 Oleksii Aliakin. All rights reserved.
  * Author: Oleksii Aliakin (alex@nls.la)
  * Author: Andrii Shelest
  *
@@ -18,7 +18,6 @@
 
 import qbs
 import qbs.FileInfo
-import "qmlTools.js" as Tools
 
 QtGuiApplication {
     property string appName: name
@@ -30,15 +29,15 @@ QtGuiApplication {
     property path appSourceRoot: sourceDirectory
     property pathList qmlImportPaths: []
 
-    property path appBinDir
-    property path appContentsPath
+    property path appBinDir: FileInfo.joinPaths(qbs.installRoot, appName)
+    property path appContentsPath: FileInfo.joinPaths(qbs.installRoot, appName)
     property path appDataPath: FileInfo.joinPaths(appContentsPath, "data")
 
     property path appQmlInstallDir: FileInfo.joinPaths(appDataPath, "qml")
     property path appConfigSourceRoot: FileInfo.joinPaths(appSourceRoot, "..", "doc", "config", "/")
     property path appConfigInstallDir: FileInfo.joinPaths(appDataPath, "config")
     property path appPluginsInstallDir: FileInfo.joinPaths(appDataPath, "plugins")
-    property path appLibsInstallDir: FileInfo.joinPaths("", "lib")
+    property path appLibsInstallDir: FileInfo.joinPaths(appContentsPath, "lib")
     property path appIncludesInstallDir: FileInfo.joinPaths(appDataPath, "include")
 
     Properties {
@@ -60,9 +59,9 @@ QtGuiApplication {
     property string cppVersion: "c++11"
     property stringList generalDefines: []
     property stringList appDefines: [
-        'APP_QML_MODULES_PATH="' + Tools.getRelativePath(appBinDir, appQmlInstallDir) + '"',
-        'APP_PLUGINS_PATH="' + Tools.getRelativePath(appBinDir, appPluginsInstallDir) + '"',
-        'APP_CONFIG_PATH="' + Tools.getRelativePath(appBinDir, appConfigInstallDir) + '"'
+        'APP_QML_MODULES_PATH="' + FileInfo.relativePath(appBinDir, appQmlInstallDir) + '"',
+        'APP_PLUGINS_PATH="' + FileInfo.relativePath(appBinDir, appPluginsInstallDir) + '"',
+        'APP_CONFIG_PATH="' + FileInfo.relativePath(appBinDir, appConfigInstallDir) + '"'
     ]
 
     property bool extraWarnings: false
@@ -85,8 +84,8 @@ QtGuiApplication {
 
     cpp.defines: appDefines.concat(generalDefines)
     cpp.rpaths: qbs.targetOS.contains("osx")
-                ? ["@executable_path/" + Tools.getRelativePath(appBinDir, appLibsInstallDir)]
-                : ["$ORIGIN/", "$ORIGIN/" + Tools.getRelativePath(appBinDir, appLibsInstallDir)]
+                ? ["@executable_path/" + FileInfo.relativePath(appBinDir, appLibsInstallDir)]
+                : ["$ORIGIN/", "$ORIGIN/" + FileInfo.relativePath(appBinDir, appLibsInstallDir)]
 
     Properties {
         //Clang special configs
@@ -104,7 +103,7 @@ QtGuiApplication {
     Group {
         fileTagsFilter: ["application"]
         qbs.install: install
-        qbs.installDir: bundle.isBundle ? FileInfo.joinPaths(product.appInstallDir, appBinDir) : product.appInstallDir
+        qbs.installDir: bundle.isBundle ? appBinDir : product.appInstallDir
     }
 
     Group {
@@ -140,18 +139,13 @@ QtGuiApplication {
     }
 
     Depends{ name: "qml_module" }
-    qml_module.targetDirectory: FileInfo.joinPaths(qbs.installRoot,
-                                                   product.appInstallDir,
-                                                   product.appQmlInstallDir)
+    qml_module.targetDirectory: product.appQmlInstallDir
 
     /* Some debug output */
     property string debug: {
         console.info("Cpp version: " + cpp.cxxLanguageVersion)
         console.info("System include paths:")
-        cpp.systemIncludePaths.forEach(function(path) {
-            console.info("    " + path);
-        })
-
+        console.info(cpp.systemIncludePaths);
         console.info("Install to: " + qbs.installRoot)
     }
 }

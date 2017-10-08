@@ -48,10 +48,7 @@ QmlTools.QtQmlApplication
     property string debug: {
         print("Cpp version: " + cpp.cxxLanguageVersion)
         print("qmlImportPaths:")
-        qmlImportPaths.forEach(function(path) {
-            print("    " + path);
-        })
-
+        print(qmlImportPaths);
         print("Install to: " + qbs.installRoot)
     }
 }
