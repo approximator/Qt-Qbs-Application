@@ -29,13 +29,11 @@ QtGuiApplication {
     property path appSourceRoot: sourceDirectory
     property pathList qmlImportPaths: []
 
-    property path appBinDir: FileInfo.joinPaths(qbs.installRoot, appName)
-    property path appContentsPath: FileInfo.joinPaths(qbs.installRoot, appName)
+    property path appBinDir: FileInfo.joinPaths(qbs.installRoot, appInstallDir)
+    property path appContentsPath: FileInfo.joinPaths(qbs.installRoot, appInstallDir)
     property path appDataPath: FileInfo.joinPaths(appContentsPath, "data")
 
     property path appQmlInstallDir: FileInfo.joinPaths(appDataPath, "qml")
-    property path appConfigSourceRoot: FileInfo.joinPaths(appSourceRoot, "..", "doc", "config", "/")
-    property path appConfigInstallDir: FileInfo.joinPaths(appDataPath, "config")
     property path appPluginsInstallDir: FileInfo.joinPaths(appDataPath, "plugins")
     property path appLibsInstallDir: FileInfo.joinPaths(appContentsPath, "lib")
     property path appIncludesInstallDir: FileInfo.joinPaths(appDataPath, "include")
@@ -49,8 +47,6 @@ QtGuiApplication {
         appDataPath: FileInfo.joinPaths(appContentsPath, "Resources/data")
 
         appQmlInstallDir: FileInfo.joinPaths(appContentsPath, "Imports/qtquick2")
-        appConfigSourceRoot: FileInfo.joinPaths(appSourceRoot, "doc/config")
-        appConfigInstallDir: FileInfo.joinPaths(appContentsPath, "Resources/config")
         appPluginsInstallDir: FileInfo.joinPaths(appDataPath, "Plugins")
         appLibsInstallDir: FileInfo.joinPaths(appDataPath, "Frameworks")
         appIncludesInstallDir: FileInfo.joinPaths(appDataPath, "Include")
@@ -60,8 +56,7 @@ QtGuiApplication {
     property stringList generalDefines: []
     property stringList appDefines: [
         'APP_QML_MODULES_PATH="' + FileInfo.relativePath(appBinDir, appQmlInstallDir) + '"',
-        'APP_PLUGINS_PATH="' + FileInfo.relativePath(appBinDir, appPluginsInstallDir) + '"',
-        'APP_CONFIG_PATH="' + FileInfo.relativePath(appBinDir, appConfigInstallDir) + '"'
+        'APP_PLUGINS_PATH="' + FileInfo.relativePath(appBinDir, appPluginsInstallDir) + '"'
     ]
 
     property bool extraWarnings: false
@@ -109,7 +104,7 @@ QtGuiApplication {
     Group {
         fileTagsFilter: ["public_headers"]
         qbs.install: install
-        qbs.installDir: FileInfo.joinPaths(product.appInstallDir, appIncludesInstallDir)
+        qbs.installDir: appIncludesInstallDir
     }
 
     Group {
@@ -123,12 +118,6 @@ QtGuiApplication {
         fileTagsFilter: ["pkginfo"]
         qbs.install: install && bundle.isBundle
         qbs.installDir: FileInfo.joinPaths(product.appInstallDir, FileInfo.path(bundle.pkgInfoPath))
-    }
-
-    Group {
-        fileTagsFilter: ["jsonConfigs"]
-        qbs.install: install
-        qbs.installDir: FileInfo.joinPaths(product.appInstallDir, appConfigInstallDir)
     }
 
     Group {
