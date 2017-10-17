@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright © 2016 Oleksii Aliakin. All rights reserved.
+# Copyright © 2017 Oleksii Aliakin. All rights reserved.
 # Author: Oleksii Aliakin (alex@nls.la).
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -41,38 +41,38 @@ echo "qmake version:    $(qmake --version)"
 function run_and_check {
     echo ""
     echo ""
-    echo "  Executing: $@"
+    echo "  Executing: $*"
     "$@"
     local status=$?
     if [ $status -ne 0 ]; then
-        echo "Error executing: $@" >&2
+        echo "Error executing: $*" >&2
         exit 1
     fi
 }
 
 run_and_check qbs setup-toolchains --detect
-run_and_check qbs setup-qt $(which qmake) qt
+run_and_check qbs setup-qt "$(which qmake)" qt
 run_and_check qbs config profiles.qt.baseProfile gcc
 run_and_check qbs config --list profiles
 run_and_check qbs config defaultProfile qt
 
 run_and_check qbs build                  \
-    --file $SRC_DIR                      \
+    --file "$SRC_DIR"                    \
     --command-echo-mode command-line     \
     --clean-install-root                 \
     --build-directory /tmp/build         \
-    $BUILD_VARIANT                       \
-    qbs.installRoot:$INSTALL_DIR         \
+    "$BUILD_VARIANT"                     \
+    qbs.installRoot:"$INSTALL_DIR"       \
     profile:qt
 
 
-run_and_check python -u ${DEPLOY_SCRIPT}                                       \
-          --app-file      $INSTALL_DIR/$APP_DIR_NAME/$APP_NAME                 \
-          --install-dir   $INSTALL_DIR/$APP_DIR_NAME                           \
-          --data-dir      $INSTALL_DIR/$APP_DIR_NAME/data                      \
-          --libraries-dir $INSTALL_DIR/$APP_DIR_NAME/data/lib                  \
-          --qmake         $(which qmake)                                       \
-          --debug-build   $BUILD_VARIANT                                       \
+run_and_check python -u   "${DEPLOY_SCRIPT}"                                   \
+          --app-file      "$INSTALL_DIR/$APP_DIR_NAME/$APP_NAME"               \
+          --install-dir   "$INSTALL_DIR/$APP_DIR_NAME"                         \
+          --data-dir      "$INSTALL_DIR/$APP_DIR_NAME/data"                    \
+          --libraries-dir "$INSTALL_DIR/$APP_DIR_NAME/data/lib"                \
+          --qmake         "$(which qmake)"                                     \
+          --debug-build   "$BUILD_VARIANT"                                     \
           --libs          Qt5Core Qt5Widgets Qt5Gui Qt5Qml Qt5Quick Qt5Network \
                           Qt5DBus Qt5Svg Qt5XcbQpa icudata icui18n icuuc pcre  \
                           Qt53DCore Qt53DRender Qt53DInput Qt53DLogic          \
