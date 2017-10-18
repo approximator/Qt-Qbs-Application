@@ -36,7 +36,7 @@ echo "SRC_DIR:          $SRC_DIR"
 echo "INSTALL_DIR:      $INSTALL_DIR"
 echo "BUILD_VARIANT:    $BUILD_VARIANT"
 echo "qmake version:    $(qmake --version)"
-# echo "qbs version:      $(qbs --version)"
+echo "qbs version:      $(qbs --version)"
 
 function run_and_check {
     echo ""

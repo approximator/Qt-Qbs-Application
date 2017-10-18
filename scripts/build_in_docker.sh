@@ -24,7 +24,6 @@ APP_NAME=${APP_NAME:?}
 : ${PROJECT_NAME:="___"}
 
 SCRIPT_DIR=$(cd $(dirname $0) && pwd)
-ENTRY_POINT="/tmp/dock_${PROJECT_NAME}_entry_point.sh"
 
 : ${SRC_DIR:=$(cd $SCRIPT_DIR/../ && pwd)}
 : ${INSTALL_DIR:="/tmp/docker/$PROJECT_NAME"}
@@ -48,7 +47,7 @@ docker run --rm -ti                  \
     -e HOST_USER_GROUP_ID="$(id -g)" \
     -e HOST_USER_NAME="$USER"        \
     approximator/$QBS_VERSION        \
-    sh -c "cd ${SRC_DIR} && /scripts/build.sh ${SRC_DIR} ${INSTALL_DIR}/install ${APP_DIR_NAME} ${APP_NAME} ${BUILD_VARIANT}"
+    "cd ${SRC_DIR} && /scripts/build.sh ${SRC_DIR} ${INSTALL_DIR}/install ${APP_DIR_NAME} ${APP_NAME} ${BUILD_VARIANT}"
 
 res=$?
 
