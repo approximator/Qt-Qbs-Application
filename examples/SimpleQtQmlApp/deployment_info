@@ -1,0 +1,7 @@
+#!/bin/bash
+
+DEPLOY_LIBS="icudata icui18n icuuc pcre Qt53DCore Qt53DExtras Qt53DInput Qt53DLogic Qt53DQuick Qt53DRender Qt5Concurrent Qt5Core Qt5DBus Qt5Gamepad Qt5Gui Qt5Network Qt5Qml Qt5Quick Qt5Svg Qt5Widgets Qt5XcbQpa Qt5Xml"
+
+DEPLOY_PLUGINS="iconengines imageformats platforminputcontexts platforms sceneparsers xcbglintegrations"
+
+DEPLOY_QML="Qt Qt3D QtGraphicalEffects QtQuick QtQuick.2 QtQml"

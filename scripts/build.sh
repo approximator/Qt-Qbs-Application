@@ -15,19 +15,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-if [ $# != 5 ]; then
+if [ $# != 6 ]; then
    echo "Error! Please provide 5 parameters"
-   echo "SRC_DIR, INSTALL_DIR, APP_DIR_NAME, APP_NAME, BUILD_VARIANT"
+   echo "SRC_DIR, INSTALL_DIR, APP_DIR_NAME, APP_NAME, BUILD_VARIANT, DEPLOYMENT_INFO_FILE"
    exit 1
 fi
 
 ROOT_DIR=$(cd $(dirname $0) && pwd)
-DEPLOY_SCRIPT=${ROOT_DIR}/deployqt.py
+DEPLOY_SCRIPT="$ROOT_DIR/deployqt.py"
 SRC_DIR=$1
 INSTALL_DIR=$2
 APP_DIR_NAME=$3
 APP_NAME=$4
 BUILD_VARIANT=$5     # release or debug
+DEPLOYMENT_INFO_FILE=$6
 
 echo ""
 echo "I am: $(id)"
@@ -49,6 +50,13 @@ function run_and_check {
         exit 1
     fi
 }
+
+if [ ! -f "$DEPLOYMENT_INFO_FILE" ]; then
+    echo "No file $DEPLOYMENT_INFO_FILE"
+    exit -1
+fi
+
+source "$DEPLOYMENT_INFO_FILE"
 
 run_and_check qbs setup-toolchains --detect
 run_and_check qbs setup-qt "$(which qmake)" qt
@@ -73,10 +81,6 @@ run_and_check python -u   "${DEPLOY_SCRIPT}"                                   \
           --libraries-dir "$INSTALL_DIR/$APP_DIR_NAME/data/lib"                \
           --qmake         "$(which qmake)"                                     \
           --debug-build   "$BUILD_VARIANT"                                     \
-          --libs          Qt5Core Qt5Widgets Qt5Gui Qt5Qml Qt5Quick Qt5Network \
-                          Qt5DBus Qt5Svg Qt5XcbQpa icudata icui18n icuuc pcre  \
-                          Qt53DCore Qt53DRender Qt53DInput Qt53DLogic          \
-                          Qt53DExtras Qt5Gamepad Qt5Concurrent Qt53DQuick      \
-          --qt-plugins    iconengines imageformats platforms sceneparsers      \
-                          platforminputcontexts xcbglintegrations              \
-          --qml           Qt QtQuick QtQuick.2 QtGraphicalEffects Qt3D
+          --libs          $DEPLOY_LIBS                                         \
+          --qt-plugins    $DEPLOY_PLUGINS                                      \
+          --qml           $DEPLOY_QML
