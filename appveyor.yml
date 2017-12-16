@@ -8,37 +8,33 @@ environment:
 
   matrix:
   - BUILD_VARIANT: debug
-    QTDIR: C:\Qt\5.6\msvc2015_64
-
-  - BUILD_VARIANT: release
-    QTDIR: C:\Qt\5.6\msvc2015_64
-
-  - BUILD_VARIANT: debug
-    QTDIR: C:\Qt\5.7\msvc2015_64
-
-  - BUILD_VARIANT: release
-    QTDIR: C:\Qt\5.7\msvc2015_64
-
-  - BUILD_VARIANT: debug
     QTDIR: C:\Qt\5.8\msvc2015_64
 
   - BUILD_VARIANT: release
     QTDIR: C:\Qt\5.8\msvc2015_64
+
+  - BUILD_VARIANT: debug
+    QTDIR: C:\Qt\5.9\msvc2015_64
+
+  - BUILD_VARIANT: release
+    QTDIR: C:\Qt\5.9\msvc2015_64
 
 install:
   - cmd: dir C:\Qt\
   - cmd: dir C:\Qt\5.8
   - cmd: git submodule update --init --recursive
-  - cmd: curl -fsS -o rclone.zip https://downloads.rclone.org/rclone-current-windows-amd64.zip && 7z e rclone.zip
-  - cmd: set PATH=%PYTHON%;%PYTHON%\Scripts;%QTDIR%\bin;C:\Qt\Tools\QtCreator\bin;%PATH%;%cd%
+  - cmd: curl -fsSL -o rclone.zip https://downloads.rclone.org/rclone-current-windows-amd64.zip && 7z e rclone.zip
+  - cmd: curl -fsSL -o qbs.zip https://download.qt.io/official_releases/qbs/1.10.0/qbs-windows-x86_64-1.10.0.zip && 7z x qbs.zip
+  - cmd: set PATH=%cd%\qbs-windows-x86_64-1.10.0\bin;%PYTHON%;%PYTHON%\Scripts;%QTDIR%\bin;C:\Qt\Tools\QtCreator\bin;%PATH%;%cd%
   - cmd: dir %cd%
-  - cmd: set APP_DIR=%INSTALL_DIR%\\simpleQtQmlApp
+  - cmd: set APP_DIR=%INSTALL_DIR%
   - cmd: set SCREENSHOTS_DIR=%INSTALL_DIR%
   - cmd: python -m pip install --upgrade pip && pip install --upgrade wheel -V && pip install --upgrade PySide easyprocess Pillow pyscreenshot pyvirtualdisplay -V
   - cmd: IF DEFINED INSTALL_MATPLOTLIB ( pip install --upgrade --pre https://pypi.python.org/packages/cp34/m/matplotlib/matplotlib-1.5.1-cp34-none-win32.whl -V )
   - python --version
   - pip --version
   - ps: $screen_resolution = '1280x800'; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
+  - cmd: qbs --version
 
 build_script:
 - cmd: >-
@@ -72,7 +68,7 @@ build_script:
 
     dir data\qml\
 
-    python -u %APPVEYOR_BUILD_FOLDER%\\scripts\\take_screenshot.py -f %INSTALL_DIR%\\simpleQtQmlApp\\qtQmlsimple.exe -t 55 -o %SCREENSHOTS_DIR%\\screenshot.png
+    python -u %APPVEYOR_BUILD_FOLDER%\\scripts\\take_screenshot.py -f %INSTALL_DIR%\\qtQmlsimple.exe -t 55 -o %SCREENSHOTS_DIR%\\screenshot.png
 
 artifacts:
 - path: install

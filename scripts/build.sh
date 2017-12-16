@@ -75,10 +75,10 @@ run_and_check qbs build                  \
 
 
 run_and_check python -u   "${DEPLOY_SCRIPT}"                                   \
-          --app-file      "$INSTALL_DIR/$APP_DIR_NAME/$APP_NAME"               \
-          --install-dir   "$INSTALL_DIR/$APP_DIR_NAME"                         \
-          --data-dir      "$INSTALL_DIR/$APP_DIR_NAME/data"                    \
-          --libraries-dir "$INSTALL_DIR/$APP_DIR_NAME/data/lib"                \
+          --app-file      "$INSTALL_DIR/$APP_NAME"                             \
+          --install-dir   "$INSTALL_DIR"                                       \
+          --data-dir      "$INSTALL_DIR/data"                                  \
+          --libraries-dir "$INSTALL_DIR/data/lib"                              \
           --qmake         "$(which qmake)"                                     \
           --debug-build   "$BUILD_VARIANT"                                     \
           --libs          $DEPLOY_LIBS                                         \
