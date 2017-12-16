@@ -1,5 +1,5 @@
 /*
-* Copyright © 2015-2016 Oleksii Aliakin. All rights reserved.
+* Copyright © 2015-2017 Oleksii Aliakin. All rights reserved.
 * Author: Oleksii Aliakin (alex@nls.la)
 * Author: Andrii Shelest
 *
@@ -18,37 +18,37 @@
 
 import qbs
 import qbs.FileInfo
-import QmlTools
 
-QmlTools.QtQmlApplication
-{
-    name: "simpleQtQmlApp"
-    appShortName: "qtQmlsimple"
+Project {
+    name: "simple-app-project"
+    QtQmlApplication
+    {
+        name: "simpleQtQmlApp"
+        appShortName: "qtQmlsimple"
 
-    Depends { name: "Qt"; submodules: [ "qml", "quick" ] }
+        /* Main source file */
+        Group {
+            name: "main_source"
+            files: [
+                "main.cpp",
+            ]
+        }
 
-    qmlImportPaths: [
-        FileInfo.joinPaths(project.appSourceRoot, "examples", "SimpleQtQmlApp", "imports")
-    ]
-
-    /* Main source file */
-    Group {
-        name: "main_source"
-        files: [
-            "main.cpp",
-        ]
+        Group {
+            name: "Resources"
+            files: "qml.qrc"
+        }
     }
 
-    Group {
-        name: "Resources"
-        files: "qml.qrc"
-    }
+    QmlModule {
+        name: "qml_imports"
+        moduleSourcesDir: "imports"
 
-    /* Some debug output */
-    property string debug: {
-        print("Cpp version: " + cpp.cxxLanguageVersion)
-        print("qmlImportPaths:")
-        print(qmlImportPaths);
-        print("Install to: " + qbs.installRoot)
+        Group {
+            name: "qml"
+            fileTags: ["qml_import"]
+            prefix: FileInfo.joinPaths(moduleSourcesDir, "/**/")
+            files: ["*.qml", "*.js", "*.svg", "*qmldir"]
+        }
     }
 }

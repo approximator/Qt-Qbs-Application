@@ -22,8 +22,7 @@ Project
 {
     name: "examples"
 
-    property path appSourceRoot: sourceDirectory
-
+    qbsSearchPaths: "../qbs"
     references: [
         "SimpleQtQmlApp/SimpleQtQmlApp.qbs"
     ]
