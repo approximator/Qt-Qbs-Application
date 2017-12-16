@@ -58,6 +58,19 @@ QtGuiApplication {
         ]
     }
 
+    Properties {
+        condition: bundle.isBundle
+        bundle.resources: [ FileInfo.joinPaths(qbs.installRoot, app_config.dataDir)]
+        relativeQmlModulesDir: Tools.getRelativePath(bundle.executableFolderPath,
+                                                     FileInfo.joinPaths(bundle.contentsFolderPath, "Resources", app_config.qmlInstallDir))
+        relativePluginsDir: Tools.getRelativePath(bundle.executableFolderPath,
+                                                  FileInfo.joinPaths(bundle.contentsFolderPath, "Resources", app_config.pluginsInstallDir))
+        relativeLibDir: Tools.getRelativePath(bundle.executableFolderPath,
+                                              FileInfo.joinPaths(bundle.contentsFolderPath, "Resources", app_config.libInstallDir))
+        relativeConfigDir: Tools.getRelativePath(bundle.executableFolderPath,
+                                                 FileInfo.joinPaths(bundle.contentsFolderPath, "Resources", app_config.configInstallDir))
+    }
+
     cpp.defines: [
         'APP_QML_MODULES_PATH="' + relativeQmlModulesDir + '"',
         'APP_PLUGINS_PATH="' + relativePluginsDir + '"',

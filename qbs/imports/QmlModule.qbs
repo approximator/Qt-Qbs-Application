@@ -27,7 +27,7 @@ Product {
 
     property string moduleSourcesDir: "modules"
     property path moduleBaseDir: FileInfo.joinPaths(sourceDirectory, moduleSourcesDir)
-    property path moduleInstallDir: app_config.qmlInstallDir
+    property string moduleInstallDir: app_config.qmlInstallDir
 
     property pathList qmlImportPaths: [ moduleBaseDir ]
 

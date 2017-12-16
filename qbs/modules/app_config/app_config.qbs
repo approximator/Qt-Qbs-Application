@@ -22,11 +22,11 @@ import qbs.FileInfo
 Module {
     name: "app_config"
 
-    property path binDir: "bin"
-    property path dataDir: "data"
-    property path qmlInstallDir: FileInfo.joinPaths(dataDir, "qtquick2")
-    property path configInstallDir: FileInfo.joinPaths(dataDir, "config")
-    property path pluginsInstallDir: FileInfo.joinPaths(dataDir, "plugins")
-    property path libsInstallDir: "lib"
-    property path includesInstallDir: FileInfo.joinPaths(dataDir, "include")
+    property string binDir: "bin"
+    property string dataDir: "data"
+    property string qmlInstallDir: FileInfo.joinPaths(dataDir, "qtquick2")
+    property string configInstallDir: FileInfo.joinPaths(dataDir, "config")
+    property string pluginsInstallDir: FileInfo.joinPaths(dataDir, "plugins")
+    property string libsInstallDir: "lib"
+    property string includesInstallDir: FileInfo.joinPaths(dataDir, "include")
 }

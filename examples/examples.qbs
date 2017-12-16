@@ -22,7 +22,6 @@ Project
 {
     name: "examples"
 
-    qbsSearchPaths: "../qbs"
     references: [
         "SimpleQtQmlApp/SimpleQtQmlApp.qbs"
     ]
