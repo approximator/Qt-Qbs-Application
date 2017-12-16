@@ -24,7 +24,7 @@ Module {
 
     property string binDir: ""
     property string dataDir: "data"
-    property string qmlInstallDir: FileInfo.joinPaths(dataDir, "qtquick2")
+    property string qmlInstallDir: FileInfo.joinPaths(dataDir, "qml")
     property string configInstallDir: FileInfo.joinPaths(dataDir, "config")
     property string pluginsInstallDir: FileInfo.joinPaths(dataDir, "plugins")
     property string libsInstallDir: "lib"

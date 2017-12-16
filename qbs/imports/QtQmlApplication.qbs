@@ -60,7 +60,10 @@ QtGuiApplication {
 
     Properties {
         condition: bundle.isBundle
+
+        targetName: appName
         bundle.resources: [ FileInfo.joinPaths(qbs.installRoot, app_config.dataDir)]
+
         relativeQmlModulesDir: Tools.getRelativePath(bundle.executableFolderPath,
                                                      FileInfo.joinPaths(bundle.contentsFolderPath, "Resources", app_config.qmlInstallDir))
         relativePluginsDir: Tools.getRelativePath(bundle.executableFolderPath,
@@ -79,19 +82,6 @@ QtGuiApplication {
     cpp.rpaths: qbs.targetOS.contains("osx")
                 ? ["@executable_path/" + relativeLibDir]
                 : ["$ORIGIN/", "$ORIGIN/" + relativeLibDir]
-
-    Properties {
-        //Clang special configs
-        condition: qbs.toolchain.contains("clang")
-        cpp.cxxStandardLibrary: {
-            if(qbs.targetOS.contains("osx"))
-                return "libc++"
-            else if(qbs.targetOS.contains("linux"))
-                return "libstdc++"
-            else
-                return undefined
-        }
-    }
 
     Group {
         fileTagsFilter: ["application"]

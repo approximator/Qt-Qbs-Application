@@ -48,7 +48,7 @@ docker run --rm -ti                  \
     -e HOST_USER_GROUP_ID="$(id -g)" \
     -e HOST_USER_NAME="$USER"        \
     approximator/$QBS_VERSION        \
-    "cd ${SRC_DIR} && /scripts/build.sh ${SRC_DIR} ${INSTALL_DIR}/install ${APP_DIR_NAME} ${APP_NAME} ${BUILD_VARIANT} ${DEPLOYMENT_INFO_FILE}"
+    "cd ${SRC_DIR} && /scripts/build.sh ${SRC_DIR} ${INSTALL_DIR} ${APP_DIR_NAME} ${APP_NAME} ${BUILD_VARIANT} ${DEPLOYMENT_INFO_FILE}"
 
 res=$?
 

@@ -14,12 +14,12 @@ addons:
       - tree
 
 before_script:
-  - export APP_DIR_NAME=simpleQtQmlApp
+  - export APP_DIR_NAME=SimpleQtQmlApp
   - export APP_NAME=qtQmlsimple
   - export SRC_DIR="$TRAVIS_BUILD_DIR"
-  - export INSTALL_DIR=/tmp/examples
+  - export INSTALL_DIR="/tmp/examples/$APP_DIR_NAME"
   - export SCRIPTS_DIR="$SRC_DIR/scripts"
-  - export DEPLOYMENT_INFO_FILE="$TRAVIS_BUILD_DIR/examples/SimpleQtQmlApp/deployment_info"
+  - export DEPLOYMENT_INFO_FILE="$TRAVIS_BUILD_DIR/examples/$APP_DIR_NAME/deployment_info"
 
 script:
   - ${SCRIPTS_DIR}/build_in_docker.sh
