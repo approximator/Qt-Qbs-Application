@@ -16,7 +16,6 @@
 */
 
 import QtQuick 2.0
-import Simple 0.1
 
 Item {
     id: mbButtom

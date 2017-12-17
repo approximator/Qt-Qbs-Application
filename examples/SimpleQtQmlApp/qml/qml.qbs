@@ -20,24 +20,23 @@ import qbs
 import qbs.FileInfo
 
 Project {
-    name: "simple-app-project"
-    QtQmlApplication
-    {
-        name: "simpleQtQmlApp"
-        appShortName: "qtQmlsimple"
+    name: "qml-products"
 
-        Depends { name: "qml_resources" }
+    QmlModule {
+        name: "qml_imports"
+        moduleSourcesDir: "imports"
 
-        /* Main source file */
+        Depends { name: "qml_plugin" }
         Group {
-            name: "main_source"
-            files: [
-                "main.cpp",
-            ]
+            name: "qml"
+            fileTags: ["qml_import"]
+            prefix: FileInfo.joinPaths(moduleSourcesDir, "/**/")
+            files: ["*.qml", "*.js", "*.svg", "*qmldir"]
         }
     }
 
     references: [
-        "qml/qml.qbs",
+        "resources/qml_res.qbs",
+        "cpp/toolsModule.qbs"
     ]
 }

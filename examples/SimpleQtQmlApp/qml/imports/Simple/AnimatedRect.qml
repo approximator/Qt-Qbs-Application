@@ -1,6 +1,5 @@
 /*
-* Copyright © 2015-2017 Oleksii Aliakin. All rights reserved.
-* Author: Oleksii Aliakin (alex@nls.la)
+* Copyright © 2014-2017 Andrii Shelest. All rights reserved.
 * Author: Andrii Shelest
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,28 +15,29 @@
 * limitations under the License.
 */
 
-import qbs
-import qbs.FileInfo
+import QtQuick 2.0
 
-Project {
-    name: "simple-app-project"
-    QtQmlApplication
-    {
-        name: "simpleQtQmlApp"
-        appShortName: "qtQmlsimple"
+Rectangle {
+    width: 100
+    height: 100
 
-        Depends { name: "qml_resources" }
+    anchors.centerIn: parent
 
-        /* Main source file */
-        Group {
-            name: "main_source"
-            files: [
-                "main.cpp",
-            ]
-        }
+    ColorAnimation on color {
+        from: "grey"
+        to: "green"
+        duration: 2000
+
+        running: true
+        loops: Animation.Infinite
     }
 
-    references: [
-        "qml/qml.qbs",
-    ]
+    RotationAnimation on rotation{
+        from: 0
+        to: 360
+        duration: 2000
+
+        running: true
+        loops: Animation.Infinite
+    }
 }

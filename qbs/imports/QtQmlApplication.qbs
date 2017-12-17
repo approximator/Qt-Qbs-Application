@@ -35,8 +35,6 @@ QtGuiApplication {
 
     Depends { name: "app_config" }
     Depends { name: "qml_imports"; required: false }
-    Depends { name: "qml_plugins"; required: false }
-
 
     property string relativeQmlModulesDir: Tools.getRelativePath(app_config.binDir, app_config.qmlInstallDir)
     property string relativePluginsDir: Tools.getRelativePath(app_config.binDir, app_config.pluginsInstallDir)

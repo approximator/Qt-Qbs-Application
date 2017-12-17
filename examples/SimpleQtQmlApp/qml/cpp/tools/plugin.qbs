@@ -19,25 +19,33 @@
 import qbs
 import qbs.FileInfo
 
-Project {
-    name: "simple-app-project"
-    QtQmlApplication
-    {
-        name: "simpleQtQmlApp"
-        appShortName: "qtQmlsimple"
+QmlPlugin {
+    name: "toolsplugin"
 
-        Depends { name: "qml_resources" }
+    moduleUri: "Simple.Tools"
+    install: true
+    installPrefix: project.appPluginsInstallDir
+    cpp.cxxLanguageVersion: "c++11"
 
-        /* Main source file */
-        Group {
-            name: "main_source"
-            files: [
-                "main.cpp",
-            ]
-        }
+    Group {
+        name: "Sources"
+        files: [
+            "tools_plugin.cpp",
+            "fpsitem.cpp"
+        ]
     }
 
-    references: [
-        "qml/qml.qbs",
-    ]
+    Group {
+        name: "Headers"
+        files: [
+            "tools_plugin.h",
+            "fpsitem.h"
+        ]
+    }
+
+    Group {
+        name: "QmlFiles"
+        fileTags: ["dynamiclibrary"]
+        files: ["qmldir"]
+    }
 }
