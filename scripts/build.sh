@@ -26,6 +26,7 @@ DEPLOY_SCRIPT="$ROOT_DIR/deployqt.py"
 SRC_DIR=$1
 INSTALL_DIR=$2
 APP_DIR_NAME=$3
+APP_INSTALL_DIR=$INSTALL_DIR/$APP_DIR_NAME
 APP_NAME=$4
 BUILD_VARIANT=$5     # release or debug
 DEPLOYMENT_INFO_FILE=$6
@@ -70,15 +71,15 @@ run_and_check qbs build                  \
     --clean-install-root                 \
     --build-directory /tmp/build         \
     "$BUILD_VARIANT"                     \
-    qbs.installRoot:"$INSTALL_DIR"       \
+    qbs.installRoot:"$APP_INSTALL_DIR"   \
     profile:qt
 
 
 run_and_check python -u   "${DEPLOY_SCRIPT}"                                   \
-          --app-file      "$INSTALL_DIR/$APP_DIR_NAME/$APP_NAME"               \
-          --install-dir   "$INSTALL_DIR/$APP_DIR_NAME"                         \
-          --data-dir      "$INSTALL_DIR/$APP_DIR_NAME/data"                    \
-          --libraries-dir "$INSTALL_DIR/$APP_DIR_NAME/data/lib"                \
+          --app-file      "$APP_INSTALL_DIR/$APP_NAME"                         \
+          --install-dir   "$APP_INSTALL_DIR"                                   \
+          --data-dir      "$APP_INSTALL_DIR/data"                              \
+          --libraries-dir "$APP_INSTALL_DIR/data/lib"                          \
           --qmake         "$(which qmake)"                                     \
           --debug-build   "$BUILD_VARIANT"                                     \
           --libs          $DEPLOY_LIBS                                         \

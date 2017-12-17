@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
     QString qmlFilesPath = QString("%1/%2").arg(QCoreApplication::applicationDirPath(),
                                                 APP_QML_MODULES_PATH);
     engine.addImportPath(QDir::toNativeSeparators(QDir::cleanPath(qmlFilesPath)));
-    qDebug() << "qmlFilesPath = " << engine.importPathList();
+    qDebug() << "qmlFilesPath = " << qmlFilesPath;
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
 
     return app.exec();

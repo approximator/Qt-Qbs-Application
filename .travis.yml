@@ -6,10 +6,6 @@ services:
 env:
     - BUILD_VARIANT=debug
     - BUILD_VARIANT=release
-    - QBS_VERSION=qbs:1.5.1.Qt5.7.0
-    - QBS_VERSION=qbs:1.5.1.Qt5.7.1
-    - QBS_VERSION=qbs:1.7.2.Qt5.7.0
-    - QBS_VERSION=qbs:1.7.2.Qt5.7.1
 
 addons:
   apt:
@@ -18,12 +14,12 @@ addons:
       - tree
 
 before_script:
-  - export APP_DIR_NAME=simpleQtQmlApp
+  - export APP_DIR_NAME=SimpleQtQmlApp
   - export APP_NAME=qtQmlsimple
   - export SRC_DIR="$TRAVIS_BUILD_DIR"
-  - export INSTALL_DIR=/tmp/examples
+  - export INSTALL_DIR="/tmp/examples"
   - export SCRIPTS_DIR="$SRC_DIR/scripts"
-  - export DEPLOYMENT_INFO_FILE="$TRAVIS_BUILD_DIR/examples/SimpleQtQmlApp/deployment_info"
+  - export DEPLOYMENT_INFO_FILE="$TRAVIS_BUILD_DIR/examples/$APP_DIR_NAME/deployment_info"
 
 script:
   - ${SCRIPTS_DIR}/build_in_docker.sh

@@ -2,7 +2,7 @@
 
 THIS_DIR=$(cd $(dirname $0) && pwd)
 
-export APP_DIR_NAME=simpleQtQmlApp
+export APP_DIR_NAME=SimpleQtQmlApp
 export APP_NAME=qtQmlsimple
 export SRC_DIR=$(cd "$THIS_DIR/../../" && pwd)
 export INSTALL_DIR=/tmp/Qt-Qbs-Application/examples
