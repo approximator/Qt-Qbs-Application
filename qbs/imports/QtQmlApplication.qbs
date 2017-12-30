@@ -65,9 +65,9 @@ QtGuiApplication {
         relativeQmlModulesDir: Tools.getRelativePath(bundle.executableFolderPath,
                                                      FileInfo.joinPaths(bundle.contentsFolderPath, "Resources", app_config.qmlInstallDir))
         relativePluginsDir: Tools.getRelativePath(bundle.executableFolderPath,
-                                                  FileInfo.joinPaths(bundle.contentsFolderPath, "Resources", app_config.pluginsInstallDir))
+                                                  FileInfo.joinPaths(bundle.contentsFolderPath, "Frameworks"))
         relativeLibDir: Tools.getRelativePath(bundle.executableFolderPath,
-                                              FileInfo.joinPaths(bundle.contentsFolderPath, "Resources", app_config.libInstallDir))
+                                              FileInfo.joinPaths(bundle.contentsFolderPath, "Resources"))
         relativeConfigDir: Tools.getRelativePath(bundle.executableFolderPath,
                                                  FileInfo.joinPaths(bundle.contentsFolderPath, "Resources", app_config.configInstallDir))
     }
@@ -77,7 +77,7 @@ QtGuiApplication {
         'APP_PLUGINS_PATH="' + relativePluginsDir + '"',
         'APP_CONFIG_PATH="' + relativeConfigDir + '"'
     ]
-    cpp.rpaths: qbs.targetOS.contains("osx")
+    cpp.rpaths: qbs.targetOS.contains("macos")
                 ? ["@executable_path/" + relativeLibDir]
                 : ["$ORIGIN/", "$ORIGIN/" + relativeLibDir]
 
@@ -86,16 +86,5 @@ QtGuiApplication {
         condition: !bundle.isBundle
         qbs.install: true
         qbs.installDir: app_config.binDir
-    }
-
-    /* Some debug output */
-    property string debug: {
-        console.info("Cpp version: " + cpp.cxxLanguageVersion)
-        console.info("System include paths:")
-        cpp.systemIncludePaths.forEach(function(path) {
-            console.info("    " + path);
-        })
-
-        console.info("Install to: " + qbs.installRoot)
     }
 }

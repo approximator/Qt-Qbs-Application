@@ -26,7 +26,10 @@ Project {
         name: "qml_imports"
         moduleSourcesDir: "imports"
 
-        Depends { name: "qml_plugin" }
+        Export {
+            Depends { name: "qml_plugin" }
+        }
+
         Group {
             name: "qml"
             fileTags: ["qml_import"]
