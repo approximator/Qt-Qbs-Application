@@ -23,12 +23,8 @@ Project {
     name: "qml-products"
 
     QmlModule {
-        name: "qml_imports"
+        name: "qml_simple"
         moduleSourcesDir: "imports"
-
-        Export {
-            Depends { name: "qml_plugin" }
-        }
 
         Group {
             name: "qml"

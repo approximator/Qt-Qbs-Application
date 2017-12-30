@@ -37,6 +37,13 @@ Project {
         }
     }
 
+    QmlImports {
+        Export {
+            Depends { name: "qml_simple" }
+            Depends { name: "qml_simple_tools" }
+        }
+    }
+
     references: [
         "qml/qml.qbs",
     ]

@@ -20,6 +20,7 @@ import qbs
 import qbs.FileInfo
 
 QmlPlugin {
+    name: "qml_simple_tools"
     moduleUri: "Simple.Tools"
 
     files: [
