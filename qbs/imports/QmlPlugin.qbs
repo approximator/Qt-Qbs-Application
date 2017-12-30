@@ -34,11 +34,6 @@ DynamicLibrary {
 
     Depends { name: "app_config" }
 
-    Properties {
-        condition: qbs.targetOS.contains("macos")
-        cpp.sonamePrefix: "@rpath/" + bundleInstallDir
-    }
-
     Group {
         name: "qml_plugin_install"
         fileTagsFilter: [ "dynamiclibrary", "qml_import" ]

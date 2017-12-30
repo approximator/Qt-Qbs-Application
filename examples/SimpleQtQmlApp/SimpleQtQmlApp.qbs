@@ -27,6 +27,8 @@ Project {
         appShortName: "qtQmlsimple"
 
         Depends { name: "qml_resources" }
+        Depends { name: "qml_simple" }
+        Depends { name: "qml_simple_tools"; cpp.link: false }
 
         /* Main source file */
         Group {
@@ -35,11 +37,6 @@ Project {
                 "main.cpp",
             ]
         }
-    }
-
-    QmlImports {
-        Depends { name: "qml_simple" }
-        Depends { name: "qml_simple_tools" }
     }
 
     references: [

@@ -29,9 +29,9 @@ QtGuiApplication {
     targetName: appShortName
 
     Depends { name: "cpp" }
-    Depends { name: "Qt.qml"}
-    Depends { name: "Qt.quick"}
-    Depends { name: "Qt.quickcontrols2"}
+    Depends { name: "Qt.qml" }
+    Depends { name: "Qt.quick" }
+    Depends { name: "Qt.quickcontrols2" }
 
     Depends { name: "app_config" }
     Depends { name: "qml_imports"; required: false }
@@ -60,7 +60,7 @@ QtGuiApplication {
         condition: bundle.isBundle
 
         targetName: appName
-        bundle.resources: [ FileInfo.joinPaths(qbs.installRoot, app_config.dataDir)]
+        bundle.resources: [ FileInfo.joinPaths(qbs.installRoot, app_config.dataDir) ]
 
         relativeQmlModulesDir: Tools.getRelativePath(bundle.executableFolderPath,
                                                      FileInfo.joinPaths(bundle.contentsFolderPath, "Resources", app_config.qmlInstallDir))
