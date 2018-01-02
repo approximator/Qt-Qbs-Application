@@ -26,23 +26,30 @@ from pyvirtualdisplay.smartdisplay import SmartDisplay
 class WinDisplay:
 
     def waitgrab(self):
-        import pyscreenshot
-        return pyscreenshot.grab()
+        from PIL import ImageGrab
+        return ImageGrab.grab()
 
 
 def take_screenshot(disp, file_name, timeout, out_file):
-    file_name = os.path.normpath(os.path.abspath(file_name))
+    # file_name = os.path.normpath(os.path.abspath(file_name))
     if sys.platform.startswith('win'):
         file_name = '\\\\'.join(file_name.split('\\'))
 
     print('Starting {}'.format(file_name))
-    with EasyProcess(file_name):
+
+    proc = EasyProcess(file_name).start()
+    try:
         print('Wait for {} sec.'.format(timeout))
         time.sleep(timeout)
 
         print('Taking screenshot')
         img = disp.waitgrab()
+        print('Saving screenshot to {}'.format(out_file))
         img.save(out_file)
+    finally:
+        proc.sendstop()
+        # EasyProcess('taskkill /fi "WINDOWTITLE eq app_for_screenshot" /f').call()
+
 
 
 if __name__ == '__main__':
@@ -62,7 +69,9 @@ if __name__ == '__main__':
     output_file_name = os.path.normpath(os.path.abspath(args.output))
 
     if sys.platform.startswith('win'):
-        take_screenshot(WinDisplay(), input_file_name, args.timeout, output_file_name)
+        take_screenshot(WinDisplay(), 'cmd /c start ' + input_file_name, args.timeout, output_file_name)
+        EasyProcess('taskkill /im {} /f'.format(os.path.basename(input_file_name))).call()
     else:
         with SmartDisplay(visible=0, size=(1024, 768), bgcolor='black') as disp:
             take_screenshot(disp, input_file_name, args.timeout, output_file_name)
+    print('Done')
