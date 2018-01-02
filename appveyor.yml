@@ -68,8 +68,10 @@ build_script:
 
     dir data\qml\
 
-    python -u %APPVEYOR_BUILD_FOLDER%\\scripts\\take_screenshot.py -f %INSTALL_DIR%\\qtQmlsimple.exe -t 55 -o %SCREENSHOTS_DIR%\\screenshot.png
+    python -u %APPVEYOR_BUILD_FOLDER%\\scripts\\take_screenshot.py -f %INSTALL_DIR%\\qtQmlsimple.exe -t 20 -o %SCREENSHOTS_DIR%\\screenshot.png
 
 artifacts:
 - path: install
   name: simpleQtQmlApp
+- path: install/*.png
+  name: screenshot
