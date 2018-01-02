@@ -19,27 +19,18 @@
 import qbs
 import qbs.FileInfo
 
-Project {
-    name: "simple-app-project"
-    QtQmlApplication
-    {
-        name: "simpleQtQmlApp"
-        appShortName: "qtQmlsimple"
+QmlPlugin {
+    name: "qml_simple_tools"
+    moduleUri: "Simple.Tools"
 
-        Depends { name: "qml_resources" }
-        Depends { name: "qml_simple" }
-        Depends { name: "qml_simple_tools"; cpp.link: false }
-
-        /* Main source file */
-        Group {
-            name: "main_source"
-            files: [
-                "main.cpp",
-            ]
-        }
-    }
-
-    references: [
-        "qml/qml.qbs",
+    files: [
+        "tools/*.h",
+        "tools/*.cpp"
     ]
+
+    Group {
+        name: "qmldir_file"
+        fileTags: ["qml_import"]
+        files: ["tools/qmldir"]
+    }
 }

@@ -1,0 +1,6 @@
+module Simple
+
+MenuBackButton 1.0 MenuBackButton.qml
+AnimatedRect 1.0 AnimatedRect.qml
+
+singleton Units 1.0 Units.qml

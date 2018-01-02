@@ -29,14 +29,12 @@ QtGuiApplication {
     targetName: appShortName
 
     Depends { name: "cpp" }
-    Depends { name: "Qt.qml"}
-    Depends { name: "Qt.quick"}
-    Depends { name: "Qt.quickcontrols2"}
+    Depends { name: "Qt.qml" }
+    Depends { name: "Qt.quick" }
+    Depends { name: "Qt.quickcontrols2" }
 
     Depends { name: "app_config" }
     Depends { name: "qml_imports"; required: false }
-    Depends { name: "qml_plugins"; required: false }
-
 
     property string relativeQmlModulesDir: Tools.getRelativePath(app_config.binDir, app_config.qmlInstallDir)
     property string relativePluginsDir: Tools.getRelativePath(app_config.binDir, app_config.pluginsInstallDir)
@@ -62,14 +60,14 @@ QtGuiApplication {
         condition: bundle.isBundle
 
         targetName: appName
-        bundle.resources: [ FileInfo.joinPaths(qbs.installRoot, app_config.dataDir)]
+        bundle.resources: [ FileInfo.joinPaths(qbs.installRoot, app_config.dataDir) ]
 
         relativeQmlModulesDir: Tools.getRelativePath(bundle.executableFolderPath,
                                                      FileInfo.joinPaths(bundle.contentsFolderPath, "Resources", app_config.qmlInstallDir))
         relativePluginsDir: Tools.getRelativePath(bundle.executableFolderPath,
-                                                  FileInfo.joinPaths(bundle.contentsFolderPath, "Resources", app_config.pluginsInstallDir))
+                                                  FileInfo.joinPaths(bundle.contentsFolderPath, "Frameworks"))
         relativeLibDir: Tools.getRelativePath(bundle.executableFolderPath,
-                                              FileInfo.joinPaths(bundle.contentsFolderPath, "Resources", app_config.libInstallDir))
+                                              FileInfo.joinPaths(bundle.contentsFolderPath, "Resources"))
         relativeConfigDir: Tools.getRelativePath(bundle.executableFolderPath,
                                                  FileInfo.joinPaths(bundle.contentsFolderPath, "Resources", app_config.configInstallDir))
     }
@@ -79,7 +77,7 @@ QtGuiApplication {
         'APP_PLUGINS_PATH="' + relativePluginsDir + '"',
         'APP_CONFIG_PATH="' + relativeConfigDir + '"'
     ]
-    cpp.rpaths: qbs.targetOS.contains("osx")
+    cpp.rpaths: qbs.targetOS.contains("macos")
                 ? ["@executable_path/" + relativeLibDir]
                 : ["$ORIGIN/", "$ORIGIN/" + relativeLibDir]
 
@@ -88,16 +86,5 @@ QtGuiApplication {
         condition: !bundle.isBundle
         qbs.install: true
         qbs.installDir: app_config.binDir
-    }
-
-    /* Some debug output */
-    property string debug: {
-        console.info("Cpp version: " + cpp.cxxLanguageVersion)
-        console.info("System include paths:")
-        cpp.systemIncludePaths.forEach(function(path) {
-            console.info("    " + path);
-        })
-
-        console.info("Install to: " + qbs.installRoot)
     }
 }

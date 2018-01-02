@@ -20,26 +20,11 @@ import qbs
 import qbs.FileInfo
 
 Project {
-    name: "simple-app-project"
-    QtQmlApplication
-    {
-        name: "simpleQtQmlApp"
-        appShortName: "qtQmlsimple"
+    name: "qml_cpp_plugins"
+    minimumQbsVersion: "1.6"
 
-        Depends { name: "qml_resources" }
-        Depends { name: "qml_simple" }
-        Depends { name: "qml_simple_tools"; cpp.link: false }
-
-        /* Main source file */
-        Group {
-            name: "main_source"
-            files: [
-                "main.cpp",
-            ]
-        }
-    }
-
+    property path pluginInstallPath: FileInfo.joinPaths("FlightGear_Autopilot", "data", "qml")
     references: [
-        "qml/qml.qbs",
+        "FGear/Tools/plugin.qbs"
     ]
 }

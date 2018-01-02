@@ -51,7 +51,7 @@ build_script:
 
     dir %INSTALL_DIR%
 
-    windeployqt --%BUILD_VARIANT% --no-system-d3d-compiler --no-translations --no-qmltooling --qmldir %APPVEYOR_BUILD_FOLDER%\examples\SimpleQtQmlApp\imports\Simple %APP_DIR%
+    windeployqt --%BUILD_VARIANT% --no-system-d3d-compiler --no-translations --no-qmltooling --qmldir %INSTALL_DIR%\data\qml %APP_DIR%
 
 # copy deployed files to needed locations (will be fixed in the future)
 - cmd: >-

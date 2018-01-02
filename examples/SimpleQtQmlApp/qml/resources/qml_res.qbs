@@ -17,29 +17,13 @@
 */
 
 import qbs
-import qbs.FileInfo
 
-Project {
-    name: "simple-app-project"
-    QtQmlApplication
-    {
-        name: "simpleQtQmlApp"
-        appShortName: "qtQmlsimple"
-
-        Depends { name: "qml_resources" }
-        Depends { name: "qml_simple" }
-        Depends { name: "qml_simple_tools"; cpp.link: false }
-
-        /* Main source file */
+Product {
+    name: "qml_resources"
+    Export {
         Group {
-            name: "main_source"
-            files: [
-                "main.cpp",
-            ]
+            name: "Resources"
+            files: "qml.qrc"
         }
     }
-
-    references: [
-        "qml/qml.qbs",
-    ]
 }
