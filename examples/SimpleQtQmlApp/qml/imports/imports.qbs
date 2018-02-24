@@ -1,5 +1,5 @@
 /*
-* Copyright © 2015-2017 Oleksii Aliakin. All rights reserved.
+* Copyright © 2015-2018 Oleksii Aliakin. All rights reserved.
 * Author: Oleksii Aliakin (alex@nls.la)
 * Author: Andrii Shelest
 *
@@ -19,21 +19,14 @@
 import qbs
 import qbs.FileInfo
 
-Project {
-    name: "qml-products"
+QmlModule {
+    name: "qml_simple"
+    moduleName: "Simple"
 
-    Product {
-        name: "qml_imports"
-
-        Export {
-            Depends { name: "qml_simple" }
-            Depends { name: "qml_simple_tools"; cpp.link: false }
-        }
+    Group {
+        name: "qml"
+        fileTags: ["qml_source"]
+        prefix: FileInfo.joinPaths(moduleSourcesDir, "/**/")
+        files: ["*.qml", "*.js", "*.svg", "*qmldir"]
     }
-
-    references: [
-        "resources/qml_res.qbs",
-        "imports/imports.qbs",
-        "cpp/toolsModule.qbs"
-    ]
 }

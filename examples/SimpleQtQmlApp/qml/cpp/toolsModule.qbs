@@ -30,7 +30,7 @@ QmlPlugin {
 
     Group {
         name: "qmldir_file"
-        fileTags: ["qml_import"]
+        fileTags: ["qml_source"]
         files: ["tools/qmldir"]
     }
 }

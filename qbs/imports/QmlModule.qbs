@@ -24,19 +24,15 @@ Product {
     type: "qml_import"
 
     Depends { name: "app_config" }
+    Depends { name: "imports_installer" }
 
-    property string moduleSourcesDir: "modules"
-    property path moduleBaseDir: FileInfo.joinPaths(sourceDirectory, moduleSourcesDir)
-    property string moduleInstallDir: app_config.qmlInstallDir
+    property string moduleName: "QmlModule"
+    readonly property path moduleSourcesDir: FileInfo.joinPaths(sourceDirectory, moduleName)
+    property path moduleBaseDir: sourceDirectory
 
     property pathList qmlImportPaths: [ moduleBaseDir ]
 
-    Group {
-        name: "qml_install"
-        fileTagsFilter: ["qml_import"]
-
-        qbs.install: true
-        qbs.installSourceBase: moduleBaseDir
-        qbs.installPrefix: moduleInstallDir
-    }
+    imports_installer.baseDir: sourceDirectory
+    imports_installer.installDir: FileInfo.joinPaths(qbs.installRoot, app_config.qmlInstallDir)
 }
+
