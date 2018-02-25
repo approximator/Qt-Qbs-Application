@@ -33,7 +33,9 @@ DynamicLibrary {
 
     Depends { name: "app_config" }
     Depends { name: "imports_installer" }
+    Depends { name: "qmldir_creator" }
 
     imports_installer.installPrefix: moduleInstallDir
     imports_installer.installDir: FileInfo.joinPaths(qbs.installRoot, app_config.qmlInstallDir)
+    qmldir_creator.moduleUri: moduleUri
 }

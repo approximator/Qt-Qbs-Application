@@ -29,7 +29,7 @@ Module {
 
     Rule {
         multiplex: false
-        inputs: ["qml_source", "dynamiclibrary"]
+        inputs: ["qml_source", "qmldir_source", "dynamiclibrary"]
 
         Artifact {
             filePath: {

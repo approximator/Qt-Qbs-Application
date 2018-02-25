@@ -27,10 +27,4 @@ QmlPlugin {
         "tools/*.h",
         "tools/*.cpp"
     ]
-
-    Group {
-        name: "qmldir_file"
-        fileTags: ["qml_source"]
-        files: ["tools/qmldir"]
-    }
 }
