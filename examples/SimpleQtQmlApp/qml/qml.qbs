@@ -27,7 +27,7 @@ Project {
 
         Export {
             Depends { name: "qml_simple" }
-            Depends { name: "qml_simple_tools"; cpp.link: false }
+            Depends { name: "qml_simple_tools" }
         }
     }
 

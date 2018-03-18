@@ -25,6 +25,12 @@ DynamicLibrary {
     property string moduleUri: "QtQuick.plugin"
     readonly property string moduleInstallDir: FileInfo.joinPaths.apply(this, moduleUri.split("."))
 
+    Export {
+        Parameters {
+            cpp.link: false
+        }
+    }
+
     targetName: moduleUri.replace(".", "").toLowerCase()
     consoleApplication: true
 
