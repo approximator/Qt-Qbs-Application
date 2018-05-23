@@ -18,6 +18,7 @@
 
 import qbs
 import qbs.FileInfo
+import qbs.ModUtils
 
 Module {
     name: "app_config"
@@ -29,4 +30,10 @@ Module {
     property string pluginsInstallDir: FileInfo.joinPaths(dataDir, "plugins")
     property string libsInstallDir: "lib"
     property string includesInstallDir: FileInfo.joinPaths(dataDir, "include")
+
+    setupRunEnvironment: {
+        var v = new ModUtils.EnvironmentVariable("QML2_IMPORT_PATH");
+        v.value = FileInfo.joinPaths(product.qbs.installRoot, product.app_config.qmlInstallDir);
+        v.set();
+    }
 }

@@ -50,7 +50,7 @@ Module {
         prepare: {
             var cmd = new JavaScriptCommand();
             var moduleFilePath = FileInfo.relativePath(product.imports_installer.installDir, output.filePath)
-            cmd.description = "Installing QML import file: " + moduleFilePath;
+            cmd.description = "[imports_installer] Installing QML import file: " + moduleFilePath;
             cmd.sourceCode = function() {
                 File.makePath(FileInfo.path(output.filePath));
                 File.copy(input.filePath, output.filePath);
